@@ -2,1053 +2,1171 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TRADEX — Mon Bot de Trading Crypto</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TRADEX — Terminal de Trading</title>
 <style>
-:root {
-  --bg:#07090f;
-  --card:#0f1623;
-  --card2:#141e2e;
-  --border:#1e2d45;
-  --blue:#3b82f6;
-  --green:#22c55e;
-  --red:#ef4444;
-  --orange:#f97316;
-  --purple:#a855f7;
-  --cyan:#06b6d4;
-  --yellow:#eab308;
-  --text:#f1f5f9;
-  --muted:#64748b;
-  --light:#94a3b8;
+:root{
+  --bg:#0d0e12;
+  --bg2:#13141a;
+  --bg3:#1a1b22;
+  --bg4:#1e2028;
+  --border:#26283a;
+  --border2:#2f3245;
+  --purple:#5741d9;
+  --purple2:#7c5cf6;
+  --purple-glow:rgba(87,65,217,.18);
+  --green:#00c076;
+  --green-bg:rgba(0,192,118,.1);
+  --red:#f03737;
+  --red-bg:rgba(240,55,55,.1);
+  --yellow:#f5a623;
+  --yellow-bg:rgba(245,166,35,.1);
+  --text:#e8e9f0;
+  --text2:#a0a3b1;
+  --text3:#5c5f74;
+  --white:#ffffff;
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
-* { box-sizing:border-box; margin:0; padding:0; }
-body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; }
-a { color:var(--blue); }
-
-/* ===== HEADER ===== */
-header {
-  background:linear-gradient(180deg,#0d1526 0%,#07090f 100%);
-  border-bottom:1px solid var(--border);
-  padding:1rem 2rem;
-  display:flex; align-items:center; justify-content:space-between;
-  position:sticky; top:0; z-index:200;
-}
-.brand { display:flex; align-items:center; gap:.75rem; }
-.brand-logo {
-  width:44px; height:44px; border-radius:12px;
-  background:linear-gradient(135deg,#3b82f6,#06b6d4);
-  display:flex; align-items:center; justify-content:center;
-  font-weight:900; font-size:1.1rem; color:#fff; letter-spacing:-.5px;
-}
-.brand h1 { font-size:1.3rem; font-weight:800; }
-.brand p { font-size:.68rem; color:var(--muted); margin-top:1px; }
-.header-right { display:flex; align-items:center; gap:1rem; }
-.live-pill {
-  display:flex; align-items:center; gap:.4rem;
-  background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.25);
-  color:var(--green); font-size:.72rem; font-weight:700;
-  padding:.3rem .75rem; border-radius:999px;
-}
-.dot { width:6px; height:6px; border-radius:50%; background:currentColor; animation:blink 1.4s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-.btn {
-  background:var(--blue); color:#fff; border:none; border-radius:8px;
-  padding:.45rem 1.1rem; font-size:.8rem; font-weight:600; cursor:pointer;
-  transition:.2s; display:flex; align-items:center; gap:.4rem;
-}
-.btn:hover { background:#2563eb; }
-.btn:disabled { background:var(--border); cursor:not-allowed; }
-#clock { font-size:.72rem; color:var(--muted); }
-
-/* ===== TICKER BAR ===== */
-.ticker-bar {
-  background:var(--card); border-bottom:1px solid var(--border);
-  padding:.55rem 2rem; display:flex; gap:2rem; flex-wrap:wrap;
-}
-.ticker-item { display:flex; align-items:center; gap:.6rem; }
-.coin-badge {
-  width:28px; height:28px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:.65rem; font-weight:800; color:#fff; flex-shrink:0;
-}
-.coin-badge.BTC { background:#f7931a; }
-.coin-badge.ETH { background:#627eea; }
-.coin-badge.SOL { background:#9945ff; }
-.coin-badge.SHIB { background:#e14d2a; }
-.coin-badge.NEAR { background:#00ec97; color:#000; }
-.ticker-info .coin-name { font-size:.68rem; color:var(--muted); font-weight:600; }
-.ticker-info .coin-price { font-size:.88rem; font-weight:700; font-family:monospace; }
-.badge-change { font-size:.7rem; font-weight:700; padding:.15rem .45rem; border-radius:5px; }
-.badge-change.up { background:rgba(34,197,94,.15); color:var(--green); }
-.badge-change.down { background:rgba(239,68,68,.15); color:var(--red); }
-
-/* ===== LAYOUT ===== */
-.page { max-width:1300px; margin:0 auto; padding:1.5rem 2rem 3rem; }
-
-/* ===== SECTION HEADERS ===== */
-.section-header {
-  display:flex; align-items:center; gap:.75rem;
-  margin-bottom:1.25rem; margin-top:2rem;
-}
-.section-icon {
-  width:36px; height:36px; border-radius:10px;
-  display:flex; align-items:center; justify-content:center; font-size:1.1rem;
-  flex-shrink:0;
-}
-.section-header h2 { font-size:1rem; font-weight:800; }
-.section-header p { font-size:.72rem; color:var(--muted); margin-top:2px; }
-.section-line { flex:1; height:1px; background:var(--border); }
-
-/* ===== SIGNAL HERO ===== */
-.signal-hero {
-  border-radius:20px; overflow:hidden;
-  border:1px solid var(--border); margin-bottom:1.5rem;
-  background:var(--card);
-}
-.signal-top {
-  padding:2rem 2rem 1.5rem;
-  display:grid; grid-template-columns:1fr auto 1fr; gap:2rem; align-items:center;
-}
-.signal-explain {
-  font-size:.8rem; color:var(--light); line-height:1.7;
-  background:var(--card2); border-radius:12px; padding:1rem 1.25rem;
-  border-left:3px solid var(--blue);
-}
-.signal-explain strong { color:var(--text); }
-.big-signal {
-  display:flex; flex-direction:column; align-items:center; gap:.5rem;
-}
-.signal-circle {
-  width:140px; height:140px; border-radius:50%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  font-weight:900; position:relative; transition:all .5s;
-}
-.signal-circle.BUY { background:radial-gradient(circle,rgba(34,197,94,.25),rgba(34,197,94,.05)); border:3px solid var(--green); box-shadow:0 0 40px rgba(34,197,94,.2); }
-.signal-circle.SELL { background:radial-gradient(circle,rgba(239,68,68,.25),rgba(239,68,68,.05)); border:3px solid var(--red); box-shadow:0 0 40px rgba(239,68,68,.2); }
-.signal-circle.HOLD { background:radial-gradient(circle,rgba(234,179,8,.25),rgba(234,179,8,.05)); border:3px solid var(--yellow); box-shadow:0 0 40px rgba(234,179,8,.2); }
-.signal-circle.WAIT { background:radial-gradient(circle,rgba(100,116,139,.15),rgba(100,116,139,.03)); border:3px solid var(--border); }
-.signal-icon { font-size:2rem; }
-.signal-word { font-size:1.4rem; letter-spacing:.05em; }
-.signal-word.BUY { color:var(--green); }
-.signal-word.SELL { color:var(--red); }
-.signal-word.HOLD { color:var(--yellow); }
-.signal-word.WAIT { color:var(--muted); }
-.signal-sub { font-size:.65rem; color:var(--muted); }
-.confidence-ring { font-size:.85rem; font-weight:700; color:var(--light); }
-.signal-asset { font-size:.8rem; color:var(--muted); }
-
-.signal-bottom {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  border-top:1px solid var(--border);
-}
-.level-block {
-  padding:1rem 1.5rem; text-align:center;
-  border-right:1px solid var(--border);
-}
-.level-block:last-child { border-right:none; }
-.level-label { font-size:.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.25rem; }
-.level-label .help { cursor:help; margin-left:.3rem; }
-.level-val { font-size:1.2rem; font-weight:800; font-family:monospace; }
-.level-val.entry { color:var(--blue); }
-.level-val.stop { color:var(--red); }
-.level-val.target { color:var(--green); }
-.level-info { font-size:.68rem; color:var(--muted); margin-top:.2rem; }
-
-/* ===== ASSET TABS ===== */
-.asset-tabs { display:flex; gap:.5rem; margin-bottom:1.25rem; flex-wrap:wrap; }
-.asset-btn {
-  display:flex; align-items:center; gap:.5rem;
-  padding:.5rem 1.1rem; border-radius:10px;
-  border:1px solid var(--border); background:transparent;
-  color:var(--muted); font-size:.8rem; font-weight:600; cursor:pointer;
-  transition:.2s;
-}
-.asset-btn:hover { background:var(--card2); color:var(--text); }
-.asset-btn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
-.asset-dot { width:8px; height:8px; border-radius:50%; }
-
-/* ===== AGENTS GRID ===== */
-.agents-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:1rem;
-}
-.agent-card {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:16px; overflow:hidden; transition:.2s;
-}
-.agent-card:hover { transform:translateY(-2px); border-color:#2a3f5f; }
-.agent-head {
-  padding:.9rem 1.1rem;
-  display:flex; align-items:center; justify-content:space-between;
-  border-bottom:1px solid var(--border);
-}
-.agent-identity { display:flex; align-items:center; gap:.6rem; }
-.agent-avatar {
-  width:38px; height:38px; border-radius:10px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.2rem; flex-shrink:0;
-}
-.agent-name { font-weight:800; font-size:.88rem; }
-.agent-role { font-size:.65rem; color:var(--muted); margin-top:1px; }
-.status-badge {
-  display:flex; align-items:center; gap:.3rem;
-  font-size:.68rem; font-weight:700; padding:.25rem .6rem; border-radius:999px;
-}
-.status-badge.thinking { background:rgba(234,179,8,.12); color:var(--yellow); border:1px solid rgba(234,179,8,.25); }
-.status-badge.done { background:rgba(34,197,94,.1); color:var(--green); border:1px solid rgba(34,197,94,.2); }
-.status-badge.idle { background:rgba(100,116,139,.1); color:var(--muted); border:1px solid rgba(100,116,139,.2); }
-.status-badge .dot { animation:none; }
-.status-badge.thinking .dot { animation:blink 1s infinite; }
-.agent-body { padding:1.1rem; }
-
-.verdict-pill {
-  display:inline-flex; align-items:center; gap:.4rem;
-  padding:.3rem .8rem; border-radius:8px; font-weight:800; font-size:.88rem;
-  margin-bottom:.85rem;
-}
-.verdict-pill.BUY { background:rgba(34,197,94,.12); color:var(--green); border:1px solid rgba(34,197,94,.3); }
-.verdict-pill.SELL { background:rgba(239,68,68,.12); color:var(--red); border:1px solid rgba(239,68,68,.3); }
-.verdict-pill.HOLD { background:rgba(234,179,8,.12); color:var(--yellow); border:1px solid rgba(234,179,8,.3); }
-.verdict-pill.BULLISH,.verdict-pill.GREED,.verdict-pill.EXTREME_GREED { background:rgba(34,197,94,.1); color:var(--green); border:1px solid rgba(34,197,94,.25); font-size:.78rem; }
-.verdict-pill.BEARISH,.verdict-pill.FEAR,.verdict-pill.EXTREME_FEAR { background:rgba(239,68,68,.1); color:var(--red); border:1px solid rgba(239,68,68,.25); font-size:.78rem; }
-.verdict-pill.NEUTRAL,.verdict-pill.RANGING { background:rgba(100,116,139,.1); color:var(--muted); border:1px solid rgba(100,116,139,.25); font-size:.78rem; }
-.verdict-pill.VOLATILE { background:rgba(249,115,22,.1); color:var(--orange); border:1px solid rgba(249,115,22,.25); font-size:.78rem; }
-.verdict-pill.REDUCE { background:rgba(239,68,68,.1); color:var(--red); border:1px solid rgba(239,68,68,.25); }
-.verdict-pill.INCREASE { background:rgba(34,197,94,.1); color:var(--green); border:1px solid rgba(34,197,94,.25); }
-
-.stat-row { display:flex; justify-content:space-between; align-items:center; padding:.4rem 0; border-bottom:1px solid var(--border); font-size:.75rem; }
-.stat-row:last-child { border-bottom:none; }
-.stat-label { color:var(--muted); }
-.stat-val { font-weight:700; font-family:monospace; }
-.stat-val.g { color:var(--green); }
-.stat-val.r { color:var(--red); }
-.stat-val.y { color:var(--yellow); }
-.stat-val.b { color:var(--blue); }
-.stat-val.p { color:var(--purple); }
-
-.prog-wrap { margin:.7rem 0; }
-.prog-label { display:flex; justify-content:space-between; font-size:.68rem; color:var(--muted); margin-bottom:.3rem; }
-.prog-track { height:6px; background:var(--border); border-radius:999px; overflow:hidden; }
-.prog-fill { height:100%; border-radius:999px; transition:width 1s ease; }
-
-.reason-toggle {
-  width:100%; background:var(--card2); border:1px solid var(--border);
-  border-radius:8px; padding:.5rem .75rem; color:var(--light);
-  font-size:.72rem; cursor:pointer; text-align:left;
-  display:flex; justify-content:space-between; align-items:center;
-  margin-top:.75rem; transition:.15s;
-}
-.reason-toggle:hover { background:var(--border); }
-.arrow { transition:.2s; }
-.arrow.open { transform:rotate(180deg); }
-.reason-box { display:none; margin-top:.4rem; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-.reason-box.open { display:block; }
-.reason-step {
-  padding:.55rem .75rem; border-bottom:1px solid var(--border);
-  font-size:.73rem; line-height:1.55; display:flex; gap:.5rem;
-  animation:fadeIn .3s ease both;
-}
-.reason-step:last-child { border-bottom:none; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(-3px)} to{opacity:1;transform:none} }
-.step-n {
-  width:18px; height:18px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:.6rem; font-weight:800; flex-shrink:0; margin-top:1px;
-}
-.reason-text { color:#cbd5e1; }
-
-.thinking-row { display:flex; align-items:center; gap:.6rem; padding:.6rem 0; color:var(--muted); font-size:.78rem; }
-.dots span { display:inline-block; width:5px; height:5px; background:var(--yellow); border-radius:50%; animation:jump 1.2s infinite; margin:0 1px; }
-.dots span:nth-child(2){animation-delay:.2s} .dots span:nth-child(3){animation-delay:.4s}
-@keyframes jump{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1);opacity:1}}
-
-/* ===== NEXUS PANEL ===== */
-.nexus-panel {
-  background:var(--card);
-  border:1px solid rgba(6,182,212,.3);
-  border-radius:20px; overflow:hidden;
-  box-shadow:0 0 60px rgba(6,182,212,.04);
-  margin-bottom:1.5rem;
-}
-.nexus-head {
-  background:linear-gradient(90deg,rgba(6,182,212,.08),transparent);
-  padding:1.1rem 1.5rem; border-bottom:1px solid rgba(6,182,212,.2);
-  display:flex; align-items:center; justify-content:space-between;
-}
-.nexus-body { padding:1.5rem; }
-.votes-row { display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1.25rem; }
-.vote-chip {
-  display:flex; align-items:center; gap:.35rem;
-  padding:.3rem .8rem; border-radius:999px;
-  font-size:.72rem; font-weight:700; border:1px solid;
-}
-.vote-chip.BUY { color:var(--green); border-color:rgba(34,197,94,.4); background:rgba(34,197,94,.08); }
-.vote-chip.SELL { color:var(--red); border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.08); }
-.vote-chip.HOLD { color:var(--yellow); border-color:rgba(234,179,8,.4); background:rgba(234,179,8,.08); }
-.nexus-levels {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; margin-bottom:1.25rem;
-}
-.nlevel {
-  background:var(--card2); border:1px solid var(--border);
-  border-radius:12px; padding:.9rem; text-align:center;
-}
-.nlevel-label { font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.3rem; }
-.nlevel-val { font-size:1.05rem; font-weight:800; font-family:monospace; }
-.synthesis-box {
-  background:var(--card2); border-left:3px solid var(--cyan);
-  border-radius:0 10px 10px 0; padding:1rem;
-  font-size:.8rem; line-height:1.75; color:#cbd5e1;
-  margin-bottom:1rem;
-}
-.veto-banner {
-  background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.25);
-  border-radius:8px; padding:.65rem 1rem;
-  font-size:.75rem; color:var(--red); margin-bottom:1rem;
-}
-
-/* ===== GUIDE KRAKEN ===== */
-.guide-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1rem; }
-.guide-step {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:14px; padding:1.25rem;
-}
-.step-badge {
-  width:32px; height:32px; border-radius:50%;
-  background:var(--blue); color:#fff;
-  display:flex; align-items:center; justify-content:center;
-  font-weight:900; font-size:.85rem; margin-bottom:.85rem;
-}
-.guide-step h3 { font-size:.88rem; font-weight:700; margin-bottom:.5rem; }
-.guide-step p { font-size:.76rem; color:var(--light); line-height:1.65; }
-.guide-step code {
-  background:var(--card2); border:1px solid var(--border);
-  border-radius:4px; padding:.15rem .4rem; font-size:.72rem; color:var(--cyan);
-  display:inline-block; margin:.2rem 0;
-}
-.guide-step .warn { color:var(--orange); font-weight:600; }
-.guide-link {
-  display:inline-flex; align-items:center; gap:.4rem;
-  background:var(--blue); color:#fff; text-decoration:none;
-  padding:.45rem .9rem; border-radius:8px; font-size:.76rem;
-  font-weight:600; margin-top:.75rem; transition:.2s;
-}
-.guide-link:hover { background:#2563eb; }
-
-/* ===== GLOSSAIRE ===== */
-.glossaire-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:.75rem; }
-.glo-card {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:12px; padding:1rem;
-}
-.glo-term { font-size:.8rem; font-weight:800; color:var(--cyan); margin-bottom:.4rem; }
-.glo-def { font-size:.73rem; color:var(--light); line-height:1.6; }
-
-/* ===== PAPER TRADING BANNER ===== */
-.paper-banner {
-  background:rgba(168,85,247,.08); border:1px solid rgba(168,85,247,.25);
-  border-radius:12px; padding:1rem 1.25rem;
-  display:flex; align-items:flex-start; gap:.75rem;
-  margin-bottom:1.5rem;
-}
-.paper-banner .icon { font-size:1.5rem; flex-shrink:0; }
-.paper-banner h3 { font-size:.85rem; font-weight:700; color:var(--purple); margin-bottom:.25rem; }
-.paper-banner p { font-size:.75rem; color:var(--light); line-height:1.6; }
-
-/* ===== FOOTER ===== */
-footer {
-  text-align:center; padding:2rem; color:var(--muted); font-size:.68rem;
-  border-top:1px solid var(--border); margin-top:3rem; line-height:2;
-}
-
-@media(max-width:768px){
-  .page{padding:1rem}
-  header{padding:.75rem 1rem}
-  .ticker-bar{padding:.4rem 1rem; gap:1rem}
-  .signal-top{grid-template-columns:1fr; text-align:center}
-  .signal-bottom{grid-template-columns:1fr}
-  .level-block{border-right:none; border-bottom:1px solid var(--border)}
-  .nexus-levels{grid-template-columns:1fr}
-}
-::-webkit-scrollbar{width:5px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* TOPBAR */
+.topbar{
+  height:52px;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 1.25rem;gap:1rem;flex-shrink:0;
+  position:sticky;top:0;z-index:100;
+}
+.topbar-logo{display:flex;align-items:center;gap:.5rem;margin-right:.5rem}
+.logo-box{
+  width:30px;height:30px;border-radius:7px;
+  background:linear-gradient(135deg,var(--purple),var(--purple2));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:.8rem;color:#fff;
+}
+.logo-name{font-weight:800;font-size:.95rem;letter-spacing:.03em}
+.logo-tag{font-size:.62rem;color:var(--text3);letter-spacing:.05em;text-transform:uppercase}
+.topbar-divider{width:1px;height:24px;background:var(--border);margin:0 .25rem}
+.live-pill{
+  display:flex;align-items:center;gap:.35rem;
+  background:rgba(0,192,118,.12);border:1px solid rgba(0,192,118,.25);
+  color:var(--green);font-size:.68rem;font-weight:700;
+  padding:.2rem .6rem;border-radius:999px;
+}
+.live-dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.topbar-prices{display:flex;gap:1.5rem;flex:1;overflow:hidden}
+.tp-item{display:flex;align-items:center;gap:.45rem;cursor:pointer;padding:.25rem .5rem;border-radius:6px;transition:.15s}
+.tp-item:hover{background:var(--bg3)}
+.tp-item.active{background:var(--bg3);border:1px solid var(--border2)}
+.tp-coin-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tp-sym{font-size:.72rem;font-weight:700;color:var(--text2)}
+.tp-price{font-size:.78rem;font-weight:700;font-family:monospace}
+.tp-chg{font-size:.65rem;font-weight:600;padding:.1rem .35rem;border-radius:4px}
+.tp-chg.up{background:var(--green-bg);color:var(--green)}
+.tp-chg.dn{background:var(--red-bg);color:var(--red)}
+.topbar-right{display:flex;align-items:center;gap:.75rem;margin-left:auto;flex-shrink:0}
+#clock{font-size:.7rem;color:var(--text3);font-family:monospace}
+.btn-analyze{
+  background:var(--purple);color:#fff;border:none;
+  border-radius:7px;padding:.35rem .9rem;
+  font-size:.75rem;font-weight:700;cursor:pointer;transition:.15s;
+  display:flex;align-items:center;gap:.35rem;
+}
+.btn-analyze:hover{background:var(--purple2)}
+.btn-analyze:disabled{background:var(--bg4);color:var(--text3);cursor:not-allowed}
+.mode-badge{
+  background:rgba(124,92,246,.12);border:1px solid rgba(124,92,246,.25);
+  color:var(--purple2);font-size:.65rem;font-weight:700;
+  padding:.2rem .55rem;border-radius:4px;
+}
+
+/* MAIN LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 52px)}
+
+/* SIDEBAR */
+.sidebar{
+  width:200px;flex-shrink:0;background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.sidebar-section{padding:.75rem .75rem .4rem;font-size:.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em}
+.coin-row{
+  display:flex;align-items:center;gap:.55rem;
+  padding:.55rem .75rem;cursor:pointer;transition:.12s;
+  border-left:2px solid transparent;
+  position:relative;
+}
+.coin-row:hover{background:var(--bg3)}
+.coin-row.active{
+  background:var(--purple-glow);
+  border-left-color:var(--purple);
+}
+.coin-icon{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.62rem;font-weight:800;color:#fff;flex-shrink:0;
+}
+.coin-row .c-sym{font-size:.78rem;font-weight:700}
+.coin-row .c-name{font-size:.62rem;color:var(--text3);margin-top:1px}
+.coin-row .c-price{font-size:.7rem;font-family:monospace;margin-left:auto;text-align:right}
+.coin-row .c-chg{font-size:.6rem;text-align:right}
+.sidebar-sep{height:1px;background:var(--border);margin:.5rem .75rem}
+.sidebar-agents{padding:.5rem .75rem}
+.agent-pill{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.45rem .6rem;border-radius:7px;
+  margin-bottom:.3rem;font-size:.7rem;
+  border:1px solid var(--border);
+  background:var(--bg3);
+}
+.agent-pill .ap-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.agent-pill .ap-name{font-weight:700;font-size:.7rem}
+.agent-pill .ap-status{font-size:.62rem;color:var(--text3);margin-left:auto}
+.agent-pill .ap-status.thinking{color:var(--yellow);animation:blink .8s infinite}
+.agent-pill .ap-status.done{color:var(--green)}
+
+/* MAIN CONTENT */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+
+/* TAB BAR */
+.tab-bar{
+  display:flex;border-bottom:1px solid var(--border);
+  background:var(--bg2);flex-shrink:0;
+}
+.tab{
+  padding:.65rem 1.25rem;font-size:.75rem;font-weight:600;
+  color:var(--text3);cursor:pointer;transition:.12s;
+  border-bottom:2px solid transparent;white-space:nowrap;
+}
+.tab:hover{color:var(--text);background:var(--bg3)}
+.tab.active{color:var(--purple2);border-bottom-color:var(--purple2)}
+
+/* PANEL */
+.panel{display:none;flex:1;padding:1.25rem;flex-direction:column;gap:1rem}
+.panel.active{display:flex}
+
+/* OVERVIEW PANEL */
+.overview-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.ov-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:1rem 1.1rem;
+}
+.ov-label{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem}
+.ov-val{font-size:1.5rem;font-weight:800;font-family:monospace}
+.ov-sub{font-size:.68rem;color:var(--text3);margin-top:.2rem}
+.ov-sub span{font-weight:700}
+
+/* SIGNAL BIG */
+.signal-row{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:start}
+.signal-box{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:1.1rem;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  min-width:160px;
+}
+.sig-circle{
+  width:90px;height:90px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;font-weight:900;transition:.4s;
+}
+.sig-circle.BUY{background:rgba(0,192,118,.12);border:2px solid var(--green);box-shadow:0 0 20px rgba(0,192,118,.15)}
+.sig-circle.SELL{background:var(--red-bg);border:2px solid var(--red);box-shadow:0 0 20px rgba(240,55,55,.15)}
+.sig-circle.HOLD{background:var(--yellow-bg);border:2px solid var(--yellow);box-shadow:0 0 20px rgba(245,166,35,.1)}
+.sig-circle.WAIT{background:var(--bg4);border:2px solid var(--border)}
+.sig-icon{font-size:1.5rem}
+.sig-lbl{font-size:.75rem;letter-spacing:.06em}
+.sig-lbl.BUY{color:var(--green)}
+.sig-lbl.SELL{color:var(--red)}
+.sig-lbl.HOLD{color:var(--yellow)}
+.sig-lbl.WAIT{color:var(--text3)}
+.sig-conf{font-size:.65rem;color:var(--text3)}
+.sig-asset{font-size:.68rem;color:var(--text3);font-family:monospace}
+
+/* LEVELS TABLE */
+.levels-table{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;flex:1;
+}
+.levels-head{
+  padding:.65rem 1rem;
+  font-size:.65rem;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.08em;
+  border-bottom:1px solid var(--border);
+  background:var(--bg3);
+}
+.level-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.6rem 1rem;border-bottom:1px solid var(--border);
+  font-size:.78rem;
+}
+.level-row:last-child{border-bottom:none}
+.level-name{color:var(--text2);display:flex;align-items:center;gap:.4rem}
+.level-name .tip{
+  display:inline-block;width:14px;height:14px;border-radius:50%;
+  background:var(--bg4);border:1px solid var(--border);
+  font-size:.55rem;text-align:center;line-height:14px;
+  color:var(--text3);cursor:help;
+}
+.level-val{font-family:monospace;font-weight:700}
+.level-val.entry{color:var(--purple2)}
+.level-val.stop{color:var(--red)}
+.level-val.target{color:var(--green)}
+.level-val.neutral{color:var(--text)}
+.level-badge{font-size:.62rem;padding:.15rem .45rem;border-radius:4px;font-weight:600}
+.level-badge.pos{background:var(--green-bg);color:var(--green)}
+.level-badge.neg{background:var(--red-bg);color:var(--red)}
+.level-badge.neu{background:var(--bg4);color:var(--text3)}
+
+/* AGENTS PANEL */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.85rem}
+.agent-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;
+}
+.ac-head{
+  padding:.7rem .9rem;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);background:var(--bg3);
+}
+.ac-id{display:flex;align-items:center;gap:.5rem}
+.ac-avatar{
+  width:30px;height:30px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+}
+.ac-name{font-size:.8rem;font-weight:800}
+.ac-role{font-size:.6rem;color:var(--text3);margin-top:1px}
+.ac-badge{
+  display:flex;align-items:center;gap:.3rem;
+  font-size:.62rem;font-weight:700;padding:.2rem .5rem;border-radius:5px;
+}
+.ac-badge.idle{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
+.ac-badge.thinking{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,166,35,.3)}
+.ac-badge.done{background:var(--green-bg);color:var(--green);border:1px solid rgba(0,192,118,.3)}
+.ac-badge .d{width:5px;height:5px;border-radius:50%;background:currentColor}
+.ac-badge.thinking .d{animation:blink .8s infinite}
+.ac-body{padding:.9rem}
+
+.verdict{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.25rem .7rem;border-radius:5px;font-weight:800;font-size:.82rem;
+  margin-bottom:.75rem;
+}
+.verdict.BUY{background:var(--green-bg);color:var(--green);border:1px solid rgba(0,192,118,.3)}
+.verdict.SELL{background:var(--red-bg);color:var(--red);border:1px solid rgba(240,55,55,.3)}
+.verdict.HOLD{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,166,35,.3)}
+.verdict.HAUSSIER{background:var(--green-bg);color:var(--green);border:1px solid rgba(0,192,118,.25);font-size:.72rem}
+.verdict.BAISSIER{background:var(--red-bg);color:var(--red);border:1px solid rgba(240,55,55,.25);font-size:.72rem}
+.verdict.NEUTRE{background:var(--bg4);color:var(--text3);border:1px solid var(--border);font-size:.72rem}
+.verdict.VOLATILE{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,166,35,.25);font-size:.72rem}
+
+.kv{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.72rem}
+.kv:last-of-type{border-bottom:none}
+.kv-k{color:var(--text3)}
+.kv-v{font-family:monospace;font-weight:700}
+.kv-v.g{color:var(--green)}
+.kv-v.r{color:var(--red)}
+.kv-v.y{color:var(--yellow)}
+.kv-v.p{color:var(--purple2)}
+
+.bar-wrap{margin:.6rem 0}
+.bar-lbl{display:flex;justify-content:space-between;font-size:.62rem;color:var(--text3);margin-bottom:.25rem}
+.bar-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width 1s ease}
+
+.reason-btn{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;padding:.4rem .7rem;color:var(--text2);
+  font-size:.68rem;cursor:pointer;text-align:left;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:.65rem;transition:.12s;
+}
+.reason-btn:hover{background:var(--bg4);color:var(--text)}
+.r-arr{transition:.2s;font-size:.6rem}
+.r-arr.open{transform:rotate(180deg)}
+.reason-list{display:none;margin-top:.35rem;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.reason-list.open{display:block}
+.r-step{
+  padding:.45rem .7rem;border-bottom:1px solid var(--border);
+  font-size:.68rem;line-height:1.5;display:flex;gap:.45rem;
+  animation:fadeUp .25s ease both;
+}
+.r-step:last-child{border-bottom:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.r-num{
+  width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.55rem;font-weight:800;margin-top:1px;
+}
+.r-txt{color:#9da3b8}
+
+.thinking-row{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;color:var(--text3);font-size:.72rem}
+.dots span{
+  display:inline-block;width:4px;height:4px;background:var(--yellow);
+  border-radius:50%;animation:jmp 1.2s infinite;margin:0 1px;
+}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes jmp{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* POSITIONS PANEL */
+.pos-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.pos-header h3{font-size:.85rem;font-weight:800}
+.pos-stat{display:flex;gap:.75rem}
+.pos-badge{
+  padding:.25rem .65rem;border-radius:5px;font-size:.68rem;font-weight:700;
+}
+.pos-badge.open{background:rgba(87,65,217,.15);color:var(--purple2);border:1px solid rgba(87,65,217,.3)}
+.pos-badge.gain{background:var(--green-bg);color:var(--green)}
+.pos-badge.loss{background:var(--red-bg);color:var(--red)}
+
+.pos-table{width:100%;border-collapse:collapse;font-size:.73rem}
+.pos-table th{
+  text-align:left;padding:.5rem .75rem;
+  font-size:.62rem;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.07em;
+  border-bottom:1px solid var(--border);background:var(--bg3);
+  white-space:nowrap;
+}
+.pos-table td{
+  padding:.6rem .75rem;border-bottom:1px solid var(--border);
+  vertical-align:middle;white-space:nowrap;
+}
+.pos-table tr:last-child td{border-bottom:none}
+.pos-table tr:hover td{background:var(--bg3)}
+.action-chip{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:4px;font-size:.68rem;font-weight:700}
+.action-chip.BUY{background:var(--green-bg);color:var(--green)}
+.action-chip.SELL{background:var(--red-bg);color:var(--red)}
+.action-chip.HOLD{background:var(--yellow-bg);color:var(--yellow)}
+.status-chip{padding:.15rem .5rem;border-radius:4px;font-size:.65rem;font-weight:600}
+.status-chip.open{background:rgba(87,65,217,.15);color:var(--purple2)}
+.status-chip.closed{background:var(--bg4);color:var(--text3)}
+.pnl.pos{color:var(--green);font-weight:700}
+.pnl.neg{color:var(--red);font-weight:700}
+
+.open-pos-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-left:3px solid var(--purple);
+  border-radius:10px;padding:1rem;margin-bottom:.75rem;
+}
+.opc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.85rem}
+.opc-sym{font-size:.95rem;font-weight:800}
+.opc-time{font-size:.62rem;color:var(--text3)}
+.opc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.opc-item .oi-lbl{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.opc-item .oi-val{font-size:.82rem;font-weight:700;font-family:monospace}
+.progress-bar-wrap{margin-top:.85rem}
+.pb-labels{display:flex;justify-content:space-between;font-size:.6rem;color:var(--text3);margin-bottom:.3rem}
+.pb-track{height:5px;background:var(--border);border-radius:3px;position:relative;overflow:hidden}
+.pb-stop{position:absolute;left:0;top:0;height:100%;background:var(--red);border-radius:3px}
+.pb-cursor{position:absolute;top:-3px;width:2px;height:11px;background:var(--white);border-radius:1px;transform:translateX(-50%)}
+.pb-tp{position:absolute;right:0;top:0;height:100%;background:var(--green);border-radius:3px}
+
+/* NEXUS PANEL */
+.nexus-panel{
+  background:var(--bg2);border:1px solid rgba(87,65,217,.35);
+  border-radius:10px;overflow:hidden;
+  box-shadow:0 0 40px rgba(87,65,217,.05);
+}
+.nexus-head{
+  background:linear-gradient(90deg,rgba(87,65,217,.12),transparent);
+  padding:.85rem 1.1rem;border-bottom:1px solid rgba(87,65,217,.2);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.nexus-body{padding:1.1rem}
+.votes-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.vote-chip{
+  display:flex;align-items:center;gap:.3rem;
+  padding:.25rem .65rem;border-radius:5px;
+  font-size:.68rem;font-weight:700;border:1px solid;
+}
+.vote-chip.BUY{color:var(--green);border-color:rgba(0,192,118,.35);background:var(--green-bg)}
+.vote-chip.SELL{color:var(--red);border-color:rgba(240,55,55,.35);background:var(--red-bg)}
+.vote-chip.HOLD{color:var(--yellow);border-color:rgba(245,166,35,.35);background:var(--yellow-bg)}
+.synth-box{
+  background:var(--bg3);border-left:2px solid var(--purple);
+  border-radius:0 7px 7px 0;padding:.85rem;
+  font-size:.74rem;line-height:1.75;color:#9da3b8;margin-bottom:.85rem;
+}
+.nx-levels{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:.85rem}
+.nxl{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center}
+.nxl-lbl{font-size:.58rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.nxl-val{font-size:.95rem;font-weight:800;font-family:monospace}
+.veto-banner{
+  background:rgba(240,55,55,.08);border:1px solid rgba(240,55,55,.25);
+  border-radius:7px;padding:.6rem .9rem;font-size:.72rem;color:var(--red);margin-bottom:.85rem;
+}
+
+/* GUIDE PANEL */
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.85rem}
+.guide-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:1.1rem;
+}
+.guide-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--purple);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:.8rem;margin-bottom:.75rem;
+}
+.guide-card h3{font-size:.82rem;font-weight:700;margin-bottom:.4rem}
+.guide-card p{font-size:.7rem;color:var(--text2);line-height:1.65}
+code{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:3px;padding:.1rem .35rem;font-size:.67rem;
+  color:#7c5cf6;display:inline-block;margin:.15rem 0;
+}
+.warn{color:var(--yellow);font-weight:600}
+.guide-link{
+  display:inline-flex;align-items:center;gap:.35rem;
+  background:var(--purple);color:#fff;text-decoration:none;
+  padding:.35rem .8rem;border-radius:6px;font-size:.7rem;
+  font-weight:700;margin-top:.65rem;transition:.12s;
+}
+.guide-link:hover{background:var(--purple2)}
+
+/* GLOSSAIRE */
+.glo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem}
+.glo-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.9rem}
+.glo-term{font-size:.75rem;font-weight:800;color:var(--purple2);margin-bottom:.35rem}
+.glo-def{font-size:.68rem;color:var(--text2);line-height:1.6}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .overview-top{grid-template-columns:1fr 1fr}
+  .signal-row{grid-template-columns:1fr}
+  .nx-levels{grid-template-columns:1fr}
+  .opc-grid{grid-template-columns:1fr 1fr}
+  .topbar-prices{display:none}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <div class="brand-logo">TX</div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-box">TX</div>
     <div>
-      <h1>TRADEX</h1>
-      <p>Votre bot de trading crypto intelligent &mdash; Tout en euros &euro;</p>
+      <div class="logo-name">TRADEX</div>
+      <div class="logo-tag">Terminal &bull; EUR</div>
     </div>
   </div>
-  <div class="header-right">
-    <div class="live-pill"><div class="dot"></div>EN DIRECT</div>
+  <div class="topbar-divider"></div>
+  <div class="live-pill"><div class="live-dot"></div>EN DIRECT</div>
+  <div class="topbar-prices" id="topbar-prices"></div>
+  <div class="topbar-right">
+    <div class="mode-badge">SIMULATION</div>
     <span id="clock"></span>
-    <button class="btn" id="refresh-btn" onclick="lancerAnalyse()">&#x27F3; Analyser</button>
-  </div>
-</header>
-
-<div class="ticker-bar">
-  <div class="ticker-item">
-    <div class="coin-badge BTC">BTC</div>
-    <div class="ticker-info"><div class="coin-name">Bitcoin</div><div class="coin-price" id="p-BTC">&mdash;</div></div>
-    <span class="badge-change" id="c-BTC">&mdash;</span>
-  </div>
-  <div class="ticker-item">
-    <div class="coin-badge ETH">ETH</div>
-    <div class="ticker-info"><div class="coin-name">Ethereum</div><div class="coin-price" id="p-ETH">&mdash;</div></div>
-    <span class="badge-change" id="c-ETH">&mdash;</span>
-  </div>
-  <div class="ticker-item">
-    <div class="coin-badge SOL">SOL</div>
-    <div class="ticker-info"><div class="coin-name">Solana</div><div class="coin-price" id="p-SOL">&mdash;</div></div>
-    <span class="badge-change" id="c-SOL">&mdash;</span>
-  </div>
-  <div class="ticker-item">
-    <div class="coin-badge SHIB">SHIB</div>
-    <div class="ticker-info"><div class="coin-name">Shiba Inu</div><div class="coin-price" id="p-SHIB">&mdash;</div></div>
-    <span class="badge-change" id="c-SHIB">&mdash;</span>
-  </div>
-  <div class="ticker-item">
-    <div class="coin-badge NEAR">NEAR</div>
-    <div class="ticker-info"><div class="coin-name">NEAR Protocol</div><div class="coin-price" id="p-NEAR">&mdash;</div></div>
-    <span class="badge-change" id="c-NEAR">&mdash;</span>
+    <button class="btn-analyze" id="btn-analyze" onclick="lancerAnalyse()">&#x27F3; Analyser</button>
   </div>
 </div>
 
-<div class="page">
+<div class="layout">
 
-<div class="paper-banner">
-  <div class="icon">🧩</div>
-  <div>
-    <h3>Mode Simulation (Paper Trading) activé &mdash; Tous les prix sont en euros (&euro;)</h3>
-    <p>Le bot tourne en mode simulation : il analyse les marchés et prend des décisions <strong>sans dépenser votre vrai argent</strong>. Tous les montants affichés sont en <strong>euros (&euro;)</strong>. Quand vous serez prêt, vous pourrez passer en mode réel dans le fichier <code>.env</code>.</p>
-  </div>
-</div>
-
-<div class="section-header">
-  <div class="section-icon" style="background:rgba(59,130,246,.12)">&#x20BF;</div>
-  <div><h2>Quelle crypto analyser ?</h2><p>Cliquez sur une crypto pour voir l’analyse complète &mdash; prix en euros</p></div>
-  <div class="section-line"></div>
-</div>
-<div class="asset-tabs">
-  <button class="asset-btn active" onclick="selCrypto('BTC',this)"><span class="asset-dot" style="background:#f7931a"></span> ₿ Bitcoin</button>
-  <button class="asset-btn" onclick="selCrypto('ETH',this)"><span class="asset-dot" style="background:#627eea"></span> Ξ Ethereum</button>
-  <button class="asset-btn" onclick="selCrypto('SOL',this)"><span class="asset-dot" style="background:#9945ff"></span> ◎ Solana</button>
-  <button class="asset-btn" onclick="selCrypto('SHIB',this)"><span class="asset-dot" style="background:#e14d2a"></span> 🐕 Shiba Inu</button>
-  <button class="asset-btn" onclick="selCrypto('NEAR',this)"><span class="asset-dot" style="background:#00ec97"></span> ⦿ NEAR</button>
-</div>
-
-<div class="section-header">
-  <div class="section-icon" style="background:rgba(6,182,212,.12)">⚡</div>
-  <div><h2>Décision du bot</h2><p>Résultat final après analyse de vos 5 agents IA &mdash; en euros (&euro;)</p></div>
-  <div class="section-line"></div>
-</div>
-
-<div class="signal-hero" id="signal-hero">
-  <div class="signal-top">
-    <div class="signal-explain" id="explain-left">
-      <strong>Comment lire ce signal ?</strong><br><br>
-      &bull; <strong style="color:var(--green)">ACHETER</strong> = Le bot pense que le prix va monter. Bonne opportunité d’entrer.<br>
-      &bull; <strong style="color:var(--red)">VENDRE</strong> = Le bot pense que le prix va baisser. Il vaut mieux sortir.<br>
-      &bull; <strong style="color:var(--yellow)">ATTENDRE</strong> = Pas de signal clair. Le bot ne fait rien et protège votre argent.<br><br>
-      Cliquez sur <em>Analyser</em> pour lancer vos 5 agents IA.
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">Marchés</div>
+    <div id="sidebar-coins"></div>
+    <div class="sidebar-sep"></div>
+    <div class="sidebar-section">Agents IA</div>
+    <div class="sidebar-agents" id="sidebar-agents">
+      <div class="agent-pill"><div class="ap-dot" style="background:#5741d9"></div><div><div class="ap-name">NEXUS</div></div><div class="ap-status" id="ap-nexus">idle</div></div>
+      <div class="agent-pill"><div class="ap-dot" style="background:#3b82f6"></div><div><div class="ap-name">TRADEX</div></div><div class="ap-status" id="ap-tradex">idle</div></div>
+      <div class="agent-pill"><div class="ap-dot" style="background:#00c076"></div><div><div class="ap-name">SENTINEL</div></div><div class="ap-status" id="ap-sentinel">idle</div></div>
+      <div class="agent-pill"><div class="ap-dot" style="background:#a855f7"></div><div><div class="ap-name">ORACLE</div></div><div class="ap-status" id="ap-oracle">idle</div></div>
+      <div class="agent-pill"><div class="ap-dot" style="background:#f5a623"></div><div><div class="ap-name">SCOUT</div></div><div class="ap-status" id="ap-scout">idle</div></div>
     </div>
-    <div class="big-signal">
-      <div class="signal-circle WAIT" id="main-circle">
-        <span class="signal-icon" id="main-icon">⏳</span>
-        <span class="signal-word WAIT" id="main-word">EN ATTENTE</span>
-        <span class="signal-sub" id="main-sub">Cliquez Analyser</span>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="tab-bar">
+      <div class="tab active" onclick="showTab('overview',this)">Vue d&rsquo;ensemble</div>
+      <div class="tab" onclick="showTab('positions',this)">💼 Positions <span id="pos-count-badge"></span></div>
+      <div class="tab" onclick="showTab('agents',this)">🤖 Agents IA</div>
+      <div class="tab" onclick="showTab('guide',this)">📖 Guide Kraken</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="panel active" id="panel-overview">
+
+      <!-- Stats rapides -->
+      <div class="overview-top">
+        <div class="ov-card">
+          <div class="ov-label">Portefeuille simulé</div>
+          <div class="ov-val" id="ov-portfolio">10 000,00&nbsp;&euro;</div>
+          <div class="ov-sub">Mode simulation &mdash; <span style="color:var(--purple2)">argent fictif</span></div>
+        </div>
+        <div class="ov-card">
+          <div class="ov-label">P&amp;L total</div>
+          <div class="ov-val" id="ov-pnl" style="color:var(--green)">+0,00&nbsp;&euro;</div>
+          <div class="ov-sub">Depuis le début de la simulation</div>
+        </div>
+        <div class="ov-card">
+          <div class="ov-label">Positions ouvertes</div>
+          <div class="ov-val" id="ov-open">0</div>
+          <div class="ov-sub">sur <span id="ov-total-trades">0</span> trades effectués</div>
+        </div>
       </div>
-      <div class="confidence-ring" id="conf-ring"></div>
-      <div class="signal-asset" id="signal-asset">BTC / EUR</div>
-    </div>
-    <div class="signal-explain" id="explain-right">
-      <strong>Qu’est-ce que la confiance ?</strong><br><br>
-      C’est le <strong>niveau de certitude</strong> du bot. Plus le pourcentage est élevé, plus les agents sont d’accord.<br><br>
-      &bull; <strong style="color:var(--green)">&gt; 75%</strong> = Signal fort, les agents sont unanimes<br>
-      &bull; <strong style="color:var(--yellow)">55&ndash;75%</strong> = Signal modéré, à surveiller<br>
-      &bull; <strong style="color:var(--red)">&lt; 55%</strong> = Signal faible, le bot choisit ATTENDRE
-    </div>
-  </div>
-  <div class="signal-bottom">
-    <div class="level-block">
-      <div class="level-label">Prix d’entrée <span class="help" title="C'est le prix en euros auquel le bot recommande d'acheter ou de vendre">&#9432;</span></div>
-      <div class="level-val entry" id="lv-entry">&mdash;</div>
-      <div class="level-info">Prix actuel en euros</div>
-    </div>
-    <div class="level-block">
-      <div class="level-label">Stop-Loss <span class="help" title="Si le prix tombe jusqu'ici, le bot vend automatiquement pour limiter vos pertes en euros">&#9432;</span></div>
-      <div class="level-val stop" id="lv-stop">&mdash;</div>
-      <div class="level-info" id="lv-stop-info">Limite de perte automatique</div>
-    </div>
-    <div class="level-block">
-      <div class="level-label">Objectif de profit <span class="help" title="Si le prix monte jusqu'ici, le bot vend pour encaisser vos gains en euros">&#9432;</span></div>
-      <div class="level-val target" id="lv-tp">&mdash;</div>
-      <div class="level-info" id="lv-tp-info">Cible de bénéfice en euros</div>
-    </div>
-  </div>
-</div>
 
-<div class="section-header" style="margin-top:1.5rem">
-  <div class="section-icon" style="background:rgba(6,182,212,.12)">🧠</div>
-  <div><h2>NEXUS — L’agent chef d’équipe</h2><p>Il lit les 4 autres agents et prend la décision finale en euros</p></div>
-  <div class="section-line"></div>
-</div>
-<div class="nexus-panel" id="nexus-panel">
-  <div class="nexus-head">
-    <div class="agent-identity">
-      <div class="agent-avatar" style="background:rgba(6,182,212,.12);font-size:1.4rem">⚡</div>
-      <div>
-        <div class="agent-name" style="color:var(--cyan)">NEXUS — Orchestrateur</div>
-        <div class="agent-role">Lit les 4 agents et prend la décision finale pondérée &mdash; tous les niveaux de prix en &euro;</div>
+      <!-- Signal + niveaux -->
+      <div class="signal-row">
+        <div class="signal-box">
+          <div class="sig-circle WAIT" id="sig-circle">
+            <div class="sig-icon" id="sig-icon">⏳</div>
+            <div class="sig-lbl WAIT" id="sig-lbl">ATTENTE</div>
+          </div>
+          <div class="sig-conf" id="sig-conf">Cliquez Analyser</div>
+          <div class="sig-asset" id="sig-asset">BTC / EUR</div>
+        </div>
+
+        <div class="levels-table">
+          <div class="levels-head" id="levels-head">Niveaux de prix &mdash; <span id="levels-coin">BTC</span> / EUR</div>
+          <div class="level-row">
+            <span class="level-name">Prix actuel<span class="tip" title="Prix en temps réel en euros">?</span></span>
+            <span class="level-val neutral" id="lv-current">—</span>
+            <span class="level-badge neu" id="lv-current-chg">—</span>
+          </div>
+          <div class="level-row">
+            <span class="level-name">Prix d&rsquo;entrée<span class="tip" title="Prix recommandé pour entrer en position">?</span></span>
+            <span class="level-val entry" id="lv-entry">—</span>
+            <span class="level-badge neu">—</span>
+          </div>
+          <div class="level-row">
+            <span class="level-name">Stop-Loss<span class="tip" title="Si le prix atteint ce niveau, le bot vend automatiquement pour limiter vos pertes">?</span></span>
+            <span class="level-val stop" id="lv-stop">—</span>
+            <span class="level-badge neg" id="lv-stop-pct">—</span>
+          </div>
+          <div class="level-row">
+            <span class="level-name">Objectif de gain<span class="tip" title="Le bot vend ici pour encaisser vos bénéfices">?</span></span>
+            <span class="level-val target" id="lv-tp">—</span>
+            <span class="level-badge pos" id="lv-tp-pct">—</span>
+          </div>
+          <div class="level-row">
+            <span class="level-name">Risque marché</span>
+            <span class="level-val" id="lv-risk" style="color:var(--text)">—</span>
+            <span class="level-badge neu" id="lv-regime">—</span>
+          </div>
+        </div>
+
+        <!-- NEXUS résumé -->
+        <div class="nexus-panel" style="min-width:240px">
+          <div class="nexus-head">
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span style="font-size:1.1rem">⚡</span>
+              <div>
+                <div style="font-size:.78rem;font-weight:800;color:#7c5cf6">NEXUS</div>
+                <div style="font-size:.6rem;color:var(--text3)">Décision orchestrée</div>
+              </div>
+            </div>
+            <div class="ac-badge idle" id="nexus-badge"><div class="d"></div>idle</div>
+          </div>
+          <div class="nexus-body" id="nexus-mini">
+            <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Synthèse NEXUS -->
+      <div id="nexus-full-wrap" style="display:none">
+        <div class="synth-box" id="nexus-synth"></div>
+        <div class="votes-row" id="nexus-votes"></div>
       </div>
     </div>
-    <div class="status-badge idle" id="nexus-status"><div class="dot"></div>En attente</div>
-  </div>
-  <div class="nexus-body" id="nexus-body">
-    <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>Cliquez sur Analyser pour démarrer...</div>
-  </div>
-</div>
 
-<div class="section-header">
-  <div class="section-icon" style="background:rgba(59,130,246,.12)">🤖</div>
-  <div><h2>Les 4 agents spécialistes</h2><p>Chaque agent analyse un aspect différent du marché &mdash; prix en &euro;</p></div>
-  <div class="section-line"></div>
-</div>
-<div class="agents-grid">
-
-  <div class="agent-card">
-    <div class="agent-head">
-      <div class="agent-identity">
-        <div class="agent-avatar" style="background:rgba(59,130,246,.12)">📊</div>
-        <div><div class="agent-name" style="color:var(--blue)">TRADEX</div><div class="agent-role">Expert en graphiques &amp; indicateurs</div></div>
+    <!-- POSITIONS -->
+    <div class="panel" id="panel-positions">
+      <div class="pos-header">
+        <h3>Positions &mdash; <span id="pos-coin-title">BTC</span> / EUR</h3>
+        <div class="pos-stat" id="pos-stats"></div>
       </div>
-      <div class="status-badge idle" id="st-tradex"><div class="dot"></div>Idle</div>
+      <div id="open-positions"></div>
+      <div id="closed-positions"></div>
     </div>
-    <div class="agent-body" id="bd-tradex">
-      <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
-      <p style="font-size:.73rem;color:var(--muted);margin-top:.5rem">TRADEX lit les courbes de prix, le RSI, le MACD et les moyennes mobiles pour détecter si le prix (en euros) va monter ou descendre.</p>
-    </div>
-  </div>
 
-  <div class="agent-card">
-    <div class="agent-head">
-      <div class="agent-identity">
-        <div class="agent-avatar" style="background:rgba(34,197,94,.1)">🛡️</div>
-        <div><div class="agent-name" style="color:var(--green)">SENTINEL</div><div class="agent-role">Gardien de votre argent</div></div>
+    <!-- AGENTS -->
+    <div class="panel" id="panel-agents">
+      <div class="agents-grid">
+        <div class="agent-card">
+          <div class="ac-head">
+            <div class="ac-id"><div class="ac-avatar" style="background:rgba(59,130,246,.12)">&#x1F4CA;</div><div><div class="ac-name" style="color:#3b82f6">TRADEX</div><div class="ac-role">Graphiques &amp; Indicateurs</div></div></div>
+            <div class="ac-badge idle" id="st-tradex"><div class="d"></div>idle</div>
+          </div>
+          <div class="ac-body" id="bd-tradex">
+            <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
+            <p style="font-size:.68rem;color:var(--text3);margin-top:.4rem">Lit les courbes de prix, RSI, MACD et moyennes mobiles pour détecter si le prix va monter ou descendre.</p>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="ac-head">
+            <div class="ac-id"><div class="ac-avatar" style="background:rgba(0,192,118,.1)">🛡️</div><div><div class="ac-name" style="color:#00c076">SENTINEL</div><div class="ac-role">Gardien de votre argent</div></div></div>
+            <div class="ac-badge idle" id="st-sentinel"><div class="d"></div>idle</div>
+          </div>
+          <div class="ac-body" id="bd-sentinel">
+            <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
+            <p style="font-size:.68rem;color:var(--text3);margin-top:.4rem">Calcule le risque de chaque opération. Peut bloquer un signal si le risque est trop élevé (veto).</p>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="ac-head">
+            <div class="ac-id"><div class="ac-avatar" style="background:rgba(168,85,247,.1)">🔮</div><div><div class="ac-name" style="color:#a855f7">ORACLE</div><div class="ac-role">Macro &amp; Sentiment</div></div></div>
+            <div class="ac-badge idle" id="st-oracle"><div class="d"></div>idle</div>
+          </div>
+          <div class="ac-body" id="bd-oracle">
+            <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
+            <p style="font-size:.68rem;color:var(--text3);margin-top:.4rem">Analyse l’humeur du marché et les tendances macro (zone euro, flux institutionnels).</p>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="ac-head">
+            <div class="ac-id"><div class="ac-avatar" style="background:rgba(245,166,35,.1)">🔭</div><div><div class="ac-name" style="color:#f5a623">SCOUT</div><div class="ac-role">Formes graphiques</div></div></div>
+            <div class="ac-badge idle" id="st-scout"><div class="d"></div>idle</div>
+          </div>
+          <div class="ac-body" id="bd-scout">
+            <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
+            <p style="font-size:.68rem;color:var(--text3);margin-top:.4rem">Détecte les figures chartistes et les niveaux de prix importants en euros.</p>
+          </div>
+        </div>
       </div>
-      <div class="status-badge idle" id="st-sentinel"><div class="dot"></div>Idle</div>
     </div>
-    <div class="agent-body" id="bd-sentinel">
-      <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
-      <p style="font-size:.73rem;color:var(--muted);margin-top:.5rem">SENTINEL calcule le risque de chaque opération. Si le risque est trop élevé, il peut bloquer le signal des autres agents pour protéger vos euros.</p>
-    </div>
-  </div>
 
-  <div class="agent-card">
-    <div class="agent-head">
-      <div class="agent-identity">
-        <div class="agent-avatar" style="background:rgba(168,85,247,.1)">🔮</div>
-        <div><div class="agent-name" style="color:var(--purple)">ORACLE</div><div class="agent-role">Analyste de l’ambiance du marché</div></div>
+    <!-- GUIDE -->
+    <div class="panel" id="panel-guide">
+      <div class="guide-grid">
+        <div class="guide-card"><div class="guide-num">1</div><h3>🔐 Créer un compte Kraken</h3><p>Inscrivez-vous sur Kraken. Kraken accepte les virements bancaires en euros directement depuis un compte français (SEPA).</p><a href="https://www.kraken.com" target="_blank" class="guide-link">🔗 Aller sur Kraken</a></div>
+        <div class="guide-card"><div class="guide-num">2</div><h3>🔑 Générer une clé API</h3><p>Dans Kraken : <strong>Sécurité &rarr; API &rarr; Créer une clé</strong>.<br>Cochez uniquement : <code>Query</code> + <code>Trade</code><br><span class="warn">⚠ Ne cochez JAMAIS Withdraw !</span></p></div>
+        <div class="guide-card"><div class="guide-num">3</div><h3>📄 Remplir le fichier .env</h3><p><code>KRAKEN_API_KEY=votre_clé</code><br><code>KRAKEN_API_SECRET=votre_secret</code><br><code>ANTHROPIC_API_KEY=votre_clé_claude</code><br><code>PORTFOLIO_SIZE_EUR=1000</code></p></div>
+        <div class="guide-card"><div class="guide-num">4</div><h3>🧩 Tester en simulation</h3><p>Gardez <code>PAPER_TRADING=true</code> dans votre fichier .env. Le bot analyse les vrais marchés en euros mais ne dépense pas votre argent. Observez 1&ndash;2 semaines.</p></div>
+        <div class="guide-card"><div class="guide-num">5</div><h3>▶️ Lancer le bot</h3><p><code>pip install -r requirements.txt</code><br>puis<br><code>python multi_agent_main.py</code><br>Le bot analyse toutes les heures et écrit dans <code>agent_state.json</code>.</p></div>
+        <div class="guide-card"><div class="guide-num">6</div><h3>🟢 Passer en réel</h3><p>Changez <code>PAPER_TRADING=false</code><br><span class="warn">⚠ Commencez petit !</span><br><code>PORTFOLIO_SIZE_EUR=200</code><br><code>MAX_POSITION_PCT=5</code></p></div>
       </div>
-      <div class="status-badge idle" id="st-oracle"><div class="dot"></div>Idle</div>
-    </div>
-    <div class="agent-body" id="bd-oracle">
-      <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
-      <p style="font-size:.73rem;color:var(--muted);margin-top:.5rem">ORACLE analyse l’humeur générale du marché : est-ce que les investisseurs ont peur ou sont euphoriques ?</p>
-    </div>
-  </div>
-
-  <div class="agent-card">
-    <div class="agent-head">
-      <div class="agent-identity">
-        <div class="agent-avatar" style="background:rgba(234,179,8,.1)">🔭</div>
-        <div><div class="agent-name" style="color:var(--yellow)">SCOUT</div><div class="agent-role">Détecteur de formes sur les graphiques</div></div>
+      <div style="margin-top:1rem">
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.65rem">Glossaire</div>
+        <div class="glo-grid">
+          <div class="glo-card"><div class="glo-term">RSI</div><div class="glo-def">Mesure si une crypto est trop achetée (&gt;70) ou trop vendue (&lt;30) en euros.</div></div>
+          <div class="glo-card"><div class="glo-term">Stop-Loss</div><div class="glo-def">Le bot vend automatiquement si le prix tombe ici, pour limiter vos pertes en euros.</div></div>
+          <div class="glo-card"><div class="glo-term">Take-Profit</div><div class="glo-def">Le bot vend ici pour encaisser vos gains en euros.</div></div>
+          <div class="glo-card"><div class="glo-term">Paper Trading</div><div class="glo-def">Simulation avec des euros fictifs. Aucun risque pour votre vrai argent.</div></div>
+          <div class="glo-card"><div class="glo-term">MACD</div><div class="glo-def">Indicateur de tendance. Croisement vers le haut = signal d’achat potentiel.</div></div>
+          <div class="glo-card"><div class="glo-term">API Kraken</div><div class="glo-def">Clé d’accès que Kraken vous donne pour que le bot passe des ordres en euros.</div></div>
+        </div>
       </div>
-      <div class="status-badge idle" id="st-scout"><div class="dot"></div>Idle</div>
     </div>
-    <div class="agent-body" id="bd-scout">
-      <div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente...</div>
-      <p style="font-size:.73rem;color:var(--muted);margin-top:.5rem">SCOUT cherche des formes connues sur les graphiques et identifie les niveaux de prix importants en euros.</p>
-    </div>
-  </div>
 
-</div>
-
-<!-- GUIDE KRAKEN -->
-<div class="section-header">
-  <div class="section-icon" style="background:rgba(249,115,22,.12)">🔗</div>
-  <div><h2>Connecter votre compte Kraken au bot</h2><p>Guide pas à pas pour débutant &mdash; tout fonctionne en euros</p></div>
-  <div class="section-line"></div>
-</div>
-<div class="guide-grid">
-  <div class="guide-step">
-    <div class="step-badge">1</div>
-    <h3>🔐 Créer un compte Kraken</h3>
-    <p>Si vous n’avez pas encore de compte, rendez-vous sur Kraken et inscrivez-vous. Kraken accepte les euros (&euro;) directement depuis un compte bancaire français.</p>
-    <a href="https://www.kraken.com" target="_blank" class="guide-link">🔗 Aller sur Kraken</a>
-  </div>
-  <div class="guide-step">
-    <div class="step-badge">2</div>
-    <h3>🔑 Générer une clé API</h3>
-    <p>Dans votre compte Kraken :<br>
-    1. Allez dans <strong>Sécurité &rarr; API</strong><br>
-    2. Cliquez <strong>Créer une clé</strong><br>
-    3. Cochez uniquement : <code>Query</code> + <code>Trade</code><br>
-    4. <span class="warn">⚠ Ne cochez jamais Withdraw !</span></p>
-  </div>
-  <div class="guide-step">
-    <div class="step-badge">3</div>
-    <h3>📄 Configurer le fichier .env</h3>
-    <p>Ouvrez le fichier <code>.env</code> dans votre dossier et remplissez :<br><br>
-    <code>KRAKEN_API_KEY=votre_clé</code><br>
-    <code>KRAKEN_API_SECRET=votre_secret</code><br>
-    <code>ANTHROPIC_API_KEY=votre_clé_claude</code><br>
-    <code>PORTFOLIO_SIZE_EUR=1000</code><br>
-    Sauvegardez le fichier.</p>
-  </div>
-  <div class="guide-step">
-    <div class="step-badge">4</div>
-    <h3>🧩 Tester en simulation d’abord</h3>
-    <p>Dans le fichier <code>.env</code>, gardez :<br>
-    <code>PAPER_TRADING=true</code><br><br>
-    Le bot va analyser les vrais marchés en euros mais <strong>ne dépensera pas votre vrai argent</strong>. Observez pendant 1&ndash;2 semaines.</p>
-  </div>
-  <div class="guide-step">
-    <div class="step-badge">5</div>
-    <h3>▶️ Lancer le bot</h3>
-    <p>Dans votre terminal, dans le dossier du bot :<br><br>
-    <code>pip install -r requirements.txt</code><br>
-    puis<br>
-    <code>python multi_agent_main.py</code><br><br>
-    Le bot tourne en arrière-plan et analyse toutes les heures.</p>
-  </div>
-  <div class="guide-step">
-    <div class="step-badge">6</div>
-    <h3>🟢 Passer en trading réel</h3>
-    <p>Quand vous êtes confiants, changez dans <code>.env</code> :<br>
-    <code>PAPER_TRADING=false</code><br><br>
-    <span class="warn">⚠ Commencez avec un petit montant en euros !</span><br>
-    <code>PORTFOLIO_SIZE_EUR=500</code><br>
-    <code>MAX_POSITION_PCT=5</code></p>
   </div>
 </div>
-
-<!-- GLOSSAIRE -->
-<div class="section-header">
-  <div class="section-icon" style="background:rgba(234,179,8,.12)">📖</div>
-  <div><h2>Glossaire &mdash; Les termes expliqués simplement</h2><p>Pas de jargon incompréhensible ici</p></div>
-  <div class="section-line"></div>
-</div>
-<div class="glossaire-grid">
-  <div class="glo-card"><div class="glo-term">RSI</div><div class="glo-def">Mesure si une crypto est trop achetée ou trop vendue. En dessous de 30 = braderie, au-dessus de 70 = euphorie.</div></div>
-  <div class="glo-card"><div class="glo-term">MACD</div><div class="glo-def">Indicateur de tendance. Quand il croise vers le haut, c’est souvent un signal d’achat. Vers le bas = signal de vente.</div></div>
-  <div class="glo-card"><div class="glo-term">EMA (Moyenne Mobile)</div><div class="glo-def">Ligne lissée du prix moyen (en euros) sur les dernières heures. Utile pour voir si le marché monte ou descend.</div></div>
-  <div class="glo-card"><div class="glo-term">Stop-Loss</div><div class="glo-def">Filet de sécurité en euros. Si le prix tombe à ce niveau, le bot vend automatiquement pour éviter de perdre trop.</div></div>
-  <div class="glo-card"><div class="glo-term">Take-Profit</div><div class="glo-def">L’objectif de gain en euros. Quand le prix atteint ce niveau, le bot vend pour encaisser les bénéfices.</div></div>
-  <div class="glo-card"><div class="glo-term">Paper Trading</div><div class="glo-def">Trading en simulation avec des euros fictifs. Permet de tester le bot sans risquer votre vrai argent.</div></div>
-  <div class="glo-card"><div class="glo-term">Order Book</div><div class="glo-def">Le carnet d’ordres. Liste de tous les acheteurs et vendeurs du moment. Utile pour voir qui domine le marché.</div></div>
-  <div class="glo-card"><div class="glo-term">Market Regime</div><div class="glo-def">L’état actuel du marché : Haussier (monte), Baissier (descend), Neutre (stagne), Volatile (sauvage).</div></div>
-  <div class="glo-card"><div class="glo-term">API Kraken</div><div class="glo-def">Un accès sécurisé que Kraken vous donne pour que le bot puisse passer des ordres en euros à votre place.</div></div>
-</div>
-
-</div>
-
-<footer>
-  TRADEX Multi-Agent System &mdash; Prix en temps réel en <strong>&euro; euros</strong> via CoinGecko &mdash; Analyse toutes les heures<br>
-  <strong>⚠️ Ce dashboard est à titre éducatif uniquement. Ne prenez aucune décision financière basée uniquement sur cet outil.</strong>
-</footer>
 
 <script>
-// ============================================================
-// CONFIG — tout en euros
-// ============================================================
-const COINS = {
-  BTC:  { id:'bitcoin',   label:'Bitcoin',       suffix:'EUR' },
-  ETH:  { id:'ethereum',  label:'Ethereum',      suffix:'EUR' },
-  SOL:  { id:'solana',    label:'Solana',        suffix:'EUR' },
-  SHIB: { id:'shiba-inu', label:'Shiba Inu',     suffix:'EUR' },
-  NEAR: { id:'near',      label:'NEAR Protocol', suffix:'EUR' },
+// =================================================================
+// CONFIG
+// =================================================================
+const COINS_CFG = {
+  BTC:  {id:'bitcoin',   label:'Bitcoin',       color:'#f7931a', dot:'#f7931a'},
+  ETH:  {id:'ethereum',  label:'Ethereum',      color:'#627eea', dot:'#627eea'},
+  SOL:  {id:'solana',    label:'Solana',        color:'#9945ff', dot:'#9945ff'},
+  SHIB: {id:'shiba-inu', label:'Shiba Inu',     color:'#e14d2a', dot:'#e14d2a'},
+  NEAR: {id:'near',      label:'NEAR Protocol', color:'#00ec97', dot:'#00ec97'},
 };
-let prices = {};
-let currentCoin = 'BTC';
-let busy = false;
 
-// Horloge
-function updateClock(){
+let prices    = {};
+let currentCoin = 'BTC';
+let busy      = false;
+let agentData = {};
+
+// Positions simulées par crypto (historique)
+const POSITIONS = {
+  BTC:[
+    {action:'BUY', entry:91200, sl:86600, tp:97000, qty:0.055, date:'2026-05-28 09:14', status:'closed', exitPrice:96800, pnl:+308},
+    {action:'BUY', entry:94500, sl:90000, tp:102000, qty:0.032, date:'2026-06-01 14:22', status:'open',   exitPrice:null,  pnl:null},
+    {action:'SELL',entry:88000, sl:92000, tp:82000,  qty:0.04,  date:'2026-05-20 11:05', status:'closed', exitPrice:83200, pnl:+192},
+  ],
+  ETH:[
+    {action:'BUY', entry:3210, sl:3050, tp:3600, qty:0.8, date:'2026-05-30 16:40', status:'closed', exitPrice:3540, pnl:+264},
+    {action:'HOLD',entry:3480, sl:null, tp:null,  qty:0,   date:'2026-06-02 08:10', status:'closed', exitPrice:null,  pnl:0},
+    {action:'BUY', entry:3490, sl:3310, tp:3800,  qty:0.6,  date:'2026-06-03 10:55', status:'open',   exitPrice:null,  pnl:null},
+  ],
+  SOL:[
+    {action:'BUY', entry:151, sl:143, tp:168, qty:4.5, date:'2026-05-25 13:20', status:'closed', exitPrice:165, pnl:+63},
+    {action:'SELL',entry:162, sl:170, tp:148, qty:3,   date:'2026-06-01 09:00', status:'open',   exitPrice:null,  pnl:null},
+  ],
+  SHIB:[
+    {action:'BUY', entry:0.0000198, sl:0.0000185, tp:0.0000235, qty:5000000, date:'2026-05-22 17:00', status:'closed', exitPrice:0.0000228, pnl:+150},
+  ],
+  NEAR:[
+    {action:'BUY', entry:4.32, sl:4.05, tp:4.90, qty:120, date:'2026-06-01 12:30', status:'open', exitPrice:null, pnl:null},
+  ],
+};
+
+// =================================================================
+// HORLOGE
+// =================================================================
+function tick(){
   document.getElementById('clock').textContent =
     new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
-setInterval(updateClock,1000); updateClock();
+setInterval(tick,1000); tick();
 
-// ============================================================
-// PRIX EN EUROS via CoinGecko
-// ============================================================
+// =================================================================
+// FORMAT EUROS
+// =================================================================
+function eur(v,sym){
+  if(sym==='SHIB'||v<0.001) return v.toFixed(8)+' €';
+  if(v>=1000) return v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  return v.toFixed(4)+' €';
+}
+function pct(v){return (v>=0?'+':'')+v.toFixed(2)+'%'}
+
+// =================================================================
+// FETCH PRIX EN EUROS
+// =================================================================
 async function fetchPrices(){
   try{
-    const ids = Object.values(COINS).map(c=>c.id).join(',');
-    // vs_currencies=eur : prix en euros
-    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=eur&include_24hr_change=true`);
-    if(!r.ok) throw new Error('API indisponible');
-    const d = await r.json();
-    for(const [sym,cfg] of Object.entries(COINS)){
-      if(d[cfg.id]) prices[sym]={ price:d[cfg.id].eur, change:d[cfg.id].eur_24h_change||0 };
+    const ids=Object.values(COINS_CFG).map(c=>c.id).join(',');
+    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=eur&include_24hr_change=true`);
+    if(!r.ok) throw 0;
+    const d=await r.json();
+    for(const[sym,cfg]of Object.entries(COINS_CFG)){
+      if(d[cfg.id]) prices[sym]={price:d[cfg.id].eur,change:d[cfg.id].eur_24h_change||0};
     }
-  } catch(e){
-    // Prix de secours en euros (approximatif)
-    prices = {
-      BTC:  { price:95800,      change:2.1  },
-      ETH:  { price:3510,       change:1.7  },
-      SOL:  { price:163,        change:-0.8 },
-      SHIB: { price:0.0000234,  change:3.0  },
-      NEAR: { price:4.71,       change:1.3  },
-    };
+  }catch{
+    prices={BTC:{price:95800,change:2.1},ETH:{price:3510,change:1.7},SOL:{price:163,change:-0.8},SHIB:{price:0.0000234,change:3.0},NEAR:{price:4.71,change:1.3}};
   }
-  renderTicker();
+  renderTopbar();
+  renderSidebar();
+  updatePositionPNL();
 }
 
-// Formatage en euros
-function fmt(p, sym){
-  if(sym==='SHIB') return p.toFixed(8)+' €';
-  if(p>=1000) return p.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
-  return p.toFixed(4)+' €';
+function renderTopbar(){
+  const el=document.getElementById('topbar-prices');
+  el.innerHTML=Object.entries(prices).map(([sym,d])=>{
+    const cfg=COINS_CFG[sym];
+    const up=d.change>=0;
+    return `<div class="tp-item${sym===currentCoin?' active':''}" onclick="selectCoin('${sym}')">
+      <div class="tp-coin-dot" style="background:${cfg.dot}"></div>
+      <span class="tp-sym">${sym}</span>
+      <span class="tp-price">${eur(d.price,sym)}</span>
+      <span class="tp-chg ${up?'up':'dn'}">${pct(d.change)}</span>
+    </div>`;
+  }).join('');
 }
 
-function renderTicker(){
-  for(const [sym,d] of Object.entries(prices)){
-    const pe=document.getElementById('p-'+sym);
-    const ce=document.getElementById('c-'+sym);
-    if(!pe||!ce) continue;
-    pe.textContent = fmt(d.price, sym);
-    const up = d.change >= 0;
-    ce.textContent = (up?'+':'')+d.change.toFixed(2)+'%';
-    ce.className = 'badge-change '+(up?'up':'down');
+function renderSidebar(){
+  const el=document.getElementById('sidebar-coins');
+  el.innerHTML=Object.entries(prices).map(([sym,d])=>{
+    const cfg=COINS_CFG[sym];
+    const up=d.change>=0;
+    const openPos=POSITIONS[sym]?.filter(p=>p.status==='open').length||0;
+    return `<div class="coin-row${sym===currentCoin?' active':''}" onclick="selectCoin('${sym}')">
+      <div class="coin-icon" style="background:${cfg.color}">${sym.slice(0,3)}</div>
+      <div>
+        <div class="c-sym">${sym} ${openPos?`<span style="font-size:.55rem;background:rgba(87,65,217,.2);color:#7c5cf6;padding:.05rem .3rem;border-radius:3px">${openPos} pos</span>`:''}</div>
+        <div class="c-name">${cfg.label}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="c-price">${eur(d.price,sym)}</div>
+        <div class="c-chg" style="color:${up?'var(--green)':'var(--red)'}">${pct(d.change)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =================================================================
+// POSITIONS
+// =================================================================
+function updatePositionPNL(){
+  let totalOpen=0,totalTrades=0;
+  for(const[sym,pos] of Object.entries(POSITIONS)){
+    totalTrades+=pos.length;
+    pos.forEach(p=>{
+      if(p.status==='open') totalOpen++;
+      if(p.status==='open' && prices[sym]){
+        const curr=prices[sym].price;
+        if(p.action==='BUY') p.pnl=(curr-p.entry)*p.qty;
+        else if(p.action==='SELL') p.pnl=(p.entry-curr)*p.qty;
+      }
+    });
+  }
+  document.getElementById('ov-open').textContent=totalOpen;
+  document.getElementById('ov-total-trades').textContent=totalTrades;
+  const allPnl=[...Object.values(POSITIONS).flat()].reduce((s,p)=>s+(p.pnl||0),0);
+  document.getElementById('ov-pnl').textContent=(allPnl>=0?'+':'')+allPnl.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  document.getElementById('ov-pnl').style.color=allPnl>=0?'var(--green)':'var(--red)';
+  const openCount=(POSITIONS[currentCoin]||[]).filter(p=>p.status==='open').length;
+  document.getElementById('pos-count-badge').textContent=openCount?` (${openCount})`:'';
+}
+
+function renderPositions(sym){
+  document.getElementById('pos-coin-title').textContent=sym;
+  const pos=POSITIONS[sym]||[];
+  const open=pos.filter(p=>p.status==='open');
+  const closed=pos.filter(p=>p.status==='closed');
+  const currP=prices[sym]?.price||0;
+
+  // Stats
+  const totalPnl=pos.reduce((s,p)=>s+(p.pnl||0),0);
+  document.getElementById('pos-stats').innerHTML=`
+    <div class="pos-badge open">${open.length} ouverte${open.length>1?'s':''}</div>
+    <div class="pos-badge ${totalPnl>=0?'gain':'loss'}">${totalPnl>=0?'+':−'}${Math.abs(totalPnl).toFixed(2)} € total</div>`;
+
+  // Positions ouvertes
+  const openEl=document.getElementById('open-positions');
+  if(open.length===0){
+    openEl.innerHTML=`<div style="font-size:.72rem;color:var(--text3);padding:.75rem 0">— Aucune position ouverte sur ${sym}</div>`;
+  } else {
+    openEl.innerHTML=`<div style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">Positions ouvertes</div>`+
+    open.map(p=>{
+      const pnlEur=p.pnl||0;
+      const pnlPct=p.entry?((pnlEur/(p.entry*p.qty))*100):0;
+      const progPos=currP&&p.sl&&p.tp ? Math.max(0,Math.min(100,((currP-p.sl)/(p.tp-p.sl))*100)) : 50;
+      return `<div class="open-pos-card">
+        <div class="opc-header">
+          <div>
+            <div class="opc-sym">
+              <span class="action-chip ${p.action}">${p.action==='BUY'?'▲':'p.action==='SELL'?'▼':'■'} ${p.action}</span>
+              &nbsp;${sym} / EUR
+            </div>
+            <div class="opc-time">⏰ Ouvert le ${p.date}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:1rem;font-weight:800;color:${pnlEur>=0?'var(--green)':'var(--red)'}">${pnlEur>=0?'+':''}${pnlEur.toFixed(2)} €</div>
+            <div style="font-size:.65rem;color:${pnlEur>=0?'var(--green)':'var(--red)'}">${pct(pnlPct)}</div>
+          </div>
+        </div>
+        <div class="opc-grid">
+          <div class="opc-item"><div class="oi-lbl">Entrée</div><div class="oi-val" style="color:var(--purple2)">${eur(p.entry,sym)}</div></div>
+          <div class="opc-item"><div class="oi-lbl">Prix actuel</div><div class="oi-val">${currP?eur(currP,sym):'—'}</div></div>
+          <div class="opc-item"><div class="oi-lbl">Stop-Loss</div><div class="oi-val" style="color:var(--red)">${p.sl?eur(p.sl,sym):'—'}</div></div>
+          <div class="opc-item"><div class="oi-lbl">Objectif</div><div class="oi-val" style="color:var(--green)">${p.tp?eur(p.tp,sym):'—'}</div></div>
+        </div>
+        ${p.sl&&p.tp?`<div class="progress-bar-wrap">
+          <div class="pb-labels"><span style="color:var(--red)">${eur(p.sl,sym)}</span><span style="color:var(--text3)">Progression</span><span style="color:var(--green)">${eur(p.tp,sym)}</span></div>
+          <div class="pb-track" style="background:var(--border)">
+            <div class="pb-stop" style="width:15%"></div>
+            <div class="pb-tp" style="width:15%"></div>
+            <div class="pb-cursor" style="left:${progPos}%"></div>
+          </div>
+        </div>`:''}
+      </div>`;
+    }).join('');
+  }
+
+  // Historique
+  const closedEl=document.getElementById('closed-positions');
+  if(closed.length===0){
+    closedEl.innerHTML='';
+  } else {
+    closedEl.innerHTML=`
+      <div style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:1rem 0 .5rem">Historique des trades</div>
+      <table class="pos-table">
+        <thead><tr>
+          <th>Date</th><th>Action</th><th>Entrée</th><th>Sortie</th><th>Quantité</th><th>P&amp;L (€)</th><th>Statut</th>
+        </tr></thead>
+        <tbody>${closed.map(p=>`<tr>
+          <td style="color:var(--text3)">${p.date}</td>
+          <td><span class="action-chip ${p.action}">${p.action}</span></td>
+          <td style="font-family:monospace">${eur(p.entry,sym)}</td>
+          <td style="font-family:monospace">${p.exitPrice?eur(p.exitPrice,sym):'—'}</td>
+          <td style="font-family:monospace">${p.qty}</td>
+          <td class="pnl ${(p.pnl||0)>=0?'pos':'neg'}">${(p.pnl||0)>=0?'+':''}${(p.pnl||0).toFixed(2)} €</td>
+          <td><span class="status-chip closed">Fermé</span></td>
+        </tr>`).join('')}</tbody>
+      </table>`;
   }
 }
 
-// ============================================================
-// GENERATION DES DONNEES AGENTS — tout en euros
-// ============================================================
+// =================================================================
+// GENERATION AGENTS
+// =================================================================
 function genData(sym){
-  const p = prices[sym]||{ price:50000, change:0 };
-  const price = p.price;   // prix en euros
-  const ch = p.change;
+  const p=prices[sym]||{price:50000,change:0};
+  const price=p.price, ch=p.change;
+  const rsi=35+Math.random()*40;
+  const macd=(Math.random()-.5)*300;
+  const regime=Math.abs(ch)>5?'VOLATILE':ch>1.5?'HAUSSIER':ch<-1.5?'BAISSIER':'NEUTRE';
 
-  const rsi  = 35 + Math.random()*40;
-  const macd = (Math.random()-.5)*300;
-  const regime = Math.abs(ch)>5?'VOLATILE':ch>1.5?'BULLISH':ch<-1.5?'BEARISH':'RANGING';
-
-  // TRADEX
   let act='HOLD';
-  if(rsi<38 && ch>-3) act='BUY';
-  else if(rsi>65 && ch>2) act='SELL';
+  if(rsi<38&&ch>-3) act='BUY';
+  else if(rsi>65&&ch>2) act='SELL';
   else if(Math.random()>.55) act=['BUY','SELL','HOLD'][Math.floor(Math.random()*3)];
-  const conf = .52+Math.random()*.35;
-  const sl = act==='BUY' ? price*.955 : price*1.045;
-  const tp = act==='BUY' ? price*1.065 : price*.935;
-  const rr  = (Math.abs(tp-price)/Math.abs(price-sl)).toFixed(1);
-
-  const tradex = { act, conf, price, sl, tp, rsi, macd, regime,
+  const conf=.52+Math.random()*.35;
+  const sl=act==='BUY'?price*.955:price*1.045;
+  const tp=act==='BUY'?price*1.065:price*.935;
+  const rr=(Math.abs(tp-price)/Math.abs(price-sl)).toFixed(1);
+  const tradex={act,conf,price,sl,tp,rsi,macd,regime,
     steps:[
-      `RSI(14) = ${rsi.toFixed(1)} — ${rsi<35?'⚠️ Zone de survente, le prix (en €) pourrait rebondir':rsi>65?'⚠️ Zone de surachat, attention à une correction':'✅ Zone neutre, pas de signal extrême'}.`,
-      `MACD histogram = ${macd.toFixed(0)} — ${macd>0?'↑ Momentum positif : les acheteurs prennent le contrôle':'↓ Momentum négatif : les vendeurs dominent'}.`,
-      `EMA20 est ${ch>0?'au-dessus':'en-dessous'} de EMA50 : tendance ${ch>0?'haussière':'baissière'} confirmée.`,
-      `Volume ${Math.random()>.5?'1.4x':'0.7x'} la moyenne — ${Math.random()>.5?'Signal confirmé par le volume.':'Volume faible, signal moins fiable.'}`
-,      `Décision TRADEX : ${act} à ${fmt(price,sym)} avec ${(conf*100).toFixed(0)}% de confiance. Ratio Gain/Risque : ${rr}:1.`
-    ]
-  };
+      `RSI(14) = ${rsi.toFixed(1)} — ${rsi<35?'⚠️ Survente : le prix en € pourrait rebondir':rsi>65?'⚠️ Surachat : attention à une correction':'✅ Zone neutre'}.`,
+      `MACD = ${macd.toFixed(0)} — ${macd>0?'↑ Acheteurs en contrôle':'↓ Vendeurs dominants'}.`,
+      `Tendance EMA : ${ch>0?'haussière (EMA20 > EMA50)':'baissière (EMA20 < EMA50)'}.`,
+      `Ratio gain/risque : ${rr}:1 — ${parseFloat(rr)>=1.5?'favorable':'insuffisant'}.`,
+      `Décision : ${act} à ${eur(price,sym)} avec ${(conf*100).toFixed(0)}% de confiance.`
+    ]};
 
-  // SENTINEL
-  const riskScore = Math.min(95, 15+Math.abs(ch)*9+Math.random()*18);
-  const maxPos = Math.max(3, 20-riskScore*.15);
-  const sentRec = riskScore>72?'REDUIRE':riskScore>40?'HOLD':'AUGMENTER';
-  const veto = riskScore>80;
-  const warns = [
-    riskScore>55?`Volatilité de ${Math.abs(ch).toFixed(1)}% sur 24h détectée`:null,
-    riskScore>70?'Risque de perte importante si position trop grande':null,
-    'Surveillance du portefeuille en euros active',
-  ].filter(Boolean);
-  const sentinel = { riskScore, maxPos, sentRec, veto, warns,
+  const riskScore=Math.min(95,15+Math.abs(ch)*9+Math.random()*18);
+  const maxPos=Math.max(3,20-riskScore*.15);
+  const veto=riskScore>80;
+  const sentRec=riskScore>72?'REDUIRE':riskScore>40?'HOLD':'AUGMENTER';
+  const sentinel={riskScore,maxPos,veto,sentRec,
+    warns:[riskScore>55?`Volatilité ${Math.abs(ch).toFixed(1)}% / 24h`:null,riskScore>70?'Risque de perte élevé':null,'Surveillance du portefeuille active'].filter(Boolean),
     steps:[
       `Score de risque : ${riskScore.toFixed(0)}/100 (${riskScore>70?'ELEVÉ':riskScore>40?'MODÉRÉ':'FAIBLE'}).`,
-      `Variation 24h de ${ch>=0?'+':''}${ch.toFixed(2)}% — ${Math.abs(ch)>5?'Très volatile, réduire la mise en euros':Math.abs(ch)>3?'Marché agité, prudence':'✅ Marché calme'}.`,
-      `Position maximale recommandée : ${maxPos.toFixed(1)}% de votre portefeuille en euros.`,
-      veto?'🛑 VETO activé : trop risqué, décision bloquée sur ATTENDRE.':'✅ Pas de veto : le signal des autres agents est validé.',
-    ]
-  };
+      `Variation 24h : ${ch>=0?'+':''}${ch.toFixed(2)}% — ${Math.abs(ch)>5?'très volatile':Math.abs(ch)>3?'agité':'calme'}.`,
+      `Position max recommandée : ${maxPos.toFixed(1)}% de votre portefeuille en €.`,
+      veto?'🛑 VETO : risque > 80, décision forcée sur ATTENDRE.':'✅ Pas de veto (risque acceptable).'
+    ]};
 
-  // ORACLE
-  const sent = ch>4?'EUPHORIE':ch>1.5?'OPTIMISME':ch<-4?'PANIQUE':ch<-1.5?'PEUR':'NEUTRE';
-  const macBias = ch>1?'HAUSSIER':ch<-1?'BAISSIER':'NEUTRE';
-  const phase = ch>2.5?'HAUSSE':ch<-2.5?'BAISSE':'ACCUMULATION';
-  const oconf = .5+Math.random()*.35;
-  const oracle = { sent, macBias, phase, oconf,
-    narratives:[
-      `Flux ${ch>0?'acheteurs dominants':'vendeurs dominants'} sur ${sym}/EUR.`,
-      `Zone euro : l’euro est ${Math.random()>.5?'fort (favorable aux cryptos en €)':'faible (attention aux conversions)'}.`,
-      `Sentiment réseaux sociaux : ${ch>2?'très positif 👍':'négatif 👎'} sur les dernières 24h.`
-    ],
+  const sent=ch>4?'EUPHORIE':ch>1.5?'OPTIMISME':ch<-4?'PANIQUE':ch<-1.5?'PEUR':'NEUTRE';
+  const macBias=ch>1?'HAUSSIER':ch<-1?'BAISSIER':'NEUTRE';
+  const oconf=.5+Math.random()*.35;
+  const oracle={sent,macBias,phase:ch>2.5?'HAUSSE':ch<-2.5?'BAISSE':'ACCUMULATION',oconf,
+    narratives:[`Flux ${ch>0?'acheteurs':'vendeurs'} sur ${sym}/EUR.`,`Zone euro : € ${Math.random()>.5?'fort':'faible'} ce mois.`,`Sentiment réseaux sociaux : ${ch>2?'positif 👍':'négatif 👎'}.`],
     steps:[
-      `Sentiment détecté : ${sent} (variation ${ch>=0?'+':''}${ch.toFixed(2)}% en euros).`,
-      `Biais macro ${macBias} : les grands investisseurs ${ch>0?'achètent':'vendent'} en ce moment.`,
-      `Phase de marché : ${phase}. ${phase==='HAUSSE'?'Bon moment pour être en position.':phase==='BAISSE'?'Attention, le marché descend.':'Patience recommandée.'}`,
-      `Analyse des narratifs actifs avec ${(oconf*100).toFixed(0)}% de certitude.`
-    ]
-  };
+      `Sentiment marché : ${sent} (variation ${ch>=0?'+':''}${ch.toFixed(2)}% en €).`,
+      `Biais macro : ${macBias}.`,
+      `Phase : ${ch>2.5?'HAUSSE':ch<-2.5?'BAISSE':'ACCUMULATION'}.`,
+      `Certitude : ${(oconf*100).toFixed(0)}%.`
+    ]};
 
-  // SCOUT
-  const allPat = [
-    {n:'Double Fond',t:'haussier',emoji:'⬆️'},{n:'Drapeau Haussier',t:'haussier',emoji:'🚩'},
-    {n:'Tête & Épaules',t:'baissier',emoji:'⬇️'},{n:'Triangle Ascendant',t:'haussier',emoji:'📈'},
-    {n:'Biège Descendant',t:'baissier',emoji:'📉'},{n:'Double Sommet',t:'baissier',emoji:'⚠️'},
-  ];
-  const detected = allPat.sort(()=>Math.random()-.5).slice(0,2);
-  const sbias = ch>1?'HAUSSIER':ch<-1?'BAISSIER':'NEUTRE';
-  const bkProb = .3+Math.random()*.5;
-  const scout = { detected, sbias, bkProb,
-    sup1:price*.963, res1:price*1.037,
+  const pats=[{n:'Double Fond',t:'haussier',e:'⬆️'},{n:'Drapeau Haussier',t:'haussier',e:'🚩'},{n:'Tête & Épaules',t:'baissier',e:'⬇️'},{n:'Triangle Ascendant',t:'haussier',e:'📈'},{n:'Double Sommet',t:'baissier',e:'⚠️'}];
+  const detected=pats.sort(()=>Math.random()-.5).slice(0,2);
+  const sbias=ch>1?'HAUSSIER':ch<-1?'BAISSIER':'NEUTRE';
+  const bkProb=.3+Math.random()*.5;
+  const scout={detected,sbias,bkProb,sup1:price*.963,res1:price*1.037,
     steps:[
-      `Scan des 200 dernières bougies terminé — ${detected.length} forme(s) détectée(s).`,
-      `Forme principale : ${detected[0].n} (${detected[0].t}) — signal ${detected[0].t}.`,
-      `Support clé (plancher) : ${fmt(price*.963,sym)}. Si le prix passe en dessous, attention.`,
-      `Résistance clé (plafond) : ${fmt(price*1.037,sym)}. Si le prix dépasse, bonne nouvelle.`,
+      `${detected.length} forme(s) détectée(s) sur 200 bougies.`,
+      `Forme principale : ${detected[0].n} (${detected[0].t}).`,
+      `Support : ${eur(price*.963,sym)}.`,
+      `Résistance : ${eur(price*1.037,sym)}.`,
       `Probabilité de hausse : ${(bkProb*100).toFixed(0)}%.`
-    ]
-  };
+    ]};
 
-  // NEXUS
-  const votes = {
-    TRADEX:   act,
-    SENTINEL: sentRec==='AUGMENTER'?'BUY':sentRec==='REDUIRE'?'SELL':'HOLD',
-    ORACLE:   macBias==='HAUSSIER'?'BUY':macBias==='BAISSIER'?'SELL':'HOLD',
-    SCOUT:    sbias==='HAUSSIER'?'BUY':sbias==='BAISSIER'?'SELL':'HOLD',
-  };
-  const vs = Object.values(votes);
-  const nb = vs.filter(v=>v==='BUY').length;
-  const ns = vs.filter(v=>v==='SELL').length;
-  const fAct = veto?'HOLD':nb>=3?'BUY':ns>=3?'SELL':nb>ns?'BUY':ns>nb?'SELL':'HOLD';
-  const fConf = Math.min(.91, conf*.35+oconf*.2+bkProb*.2+(1-riskScore/100)*.25);
-  const cScore = veto?38:Math.round(Math.max(nb,ns)/4*100);
-
-  const synth = fAct==='BUY'
-    ? `Les agents sont majoritairement optimistes sur ${sym}. TRADEX détecte un signal d’achat (RSI ${rsi.toFixed(0)}, entrée à ${fmt(price,sym)}), ORACLE confirme un sentiment ${sent.toLowerCase()}, SCOUT voit une figure ${detected[0].t}. SENTINEL valide (risque ${riskScore.toFixed(0)}/100).`
-    : fAct==='SELL'
-    ? `Les agents détectent une pression vendeuse sur ${sym}. TRADEX voit un RSI élevé (${rsi.toFixed(0)}), ORACLE signale un marché ${sent.toLowerCase()}, SCOUT identifie ${detected[0].n}. Sortie recommandée autour de ${fmt(price,sym)}.`
-    : veto
-    ? `SENTINEL a bloqué le signal : risque trop élevé (score ${riskScore.toFixed(0)}/100). La priorité est de protéger vos euros. Mieux vaut attendre.`
-    : `Les agents sont partagés sur ${sym}/EUR : pas de consensus clair. Dans ce cas, NEXUS choisit d’attendre plutôt que de risquer vos euros sans certitude.`;
-
-  const nexus = { fAct, fConf, cScore, votes, veto, synth, price, sl, tp,
+  const votes={TRADEX:act,SENTINEL:sentRec==='AUGMENTER'?'BUY':sentRec==='REDUIRE'?'SELL':'HOLD',ORACLE:macBias==='HAUSSIER'?'BUY':macBias==='BAISSIER'?'SELL':'HOLD',SCOUT:sbias==='HAUSSIER'?'BUY':sbias==='BAISSIER'?'SELL':'HOLD'};
+  const vs=Object.values(votes);
+  const nb=vs.filter(v=>v==='BUY').length,ns=vs.filter(v=>v==='SELL').length;
+  const fAct=veto?'HOLD':nb>=3?'BUY':ns>=3?'SELL':nb>ns?'BUY':ns>nb?'SELL':'HOLD';
+  const fConf=Math.min(.91,conf*.35+oconf*.2+bkProb*.2+(1-riskScore/100)*.25);
+  const cScore=veto?38:Math.round(Math.max(nb,ns)/4*100);
+  const synth=fAct==='BUY'?`Signal d’achat sur ${sym}/EUR à ${eur(price,sym)}. RSI ${rsi.toFixed(0)}, ORACLE ${sent.toLowerCase()}, SCOUT voit ${detected[0].n}. SENTINEL valide (risque ${riskScore.toFixed(0)}/100).`
+    :fAct==='SELL'?`Signal de vente sur ${sym}/EUR autour de ${eur(price,sym)}. RSI élevé (${rsi.toFixed(0)}), sentiment ${sent.toLowerCase()}, figure ${detected[0].n}. Mieux vaut sortir ou ne pas entrer.`
+    :veto?`SENTINEL bloque le signal (risque ${riskScore.toFixed(0)}/100 > 80). Priorité : protéger vos euros. ATTENDRE.`
+    :`Agents partagés sur ${sym}/EUR. Pas de consensus. NEXUS choisit ATTENDRE pour protéger votre capital en euros.`;
+  const nexus={fAct,fConf,cScore,votes,veto,synth,price,sl,tp,
     steps:[
-      `Réception des 4 analyses : TRADEX=${act}, SENTINEL=${sentRec}, ORACLE=${macBias}, SCOUT=${sbias}.`,
-      `Poids appliqués : TRADEX 35% + SENTINEL 25% (droit de veto si risque>80) + ORACLE 20% + SCOUT 20%.`,
-      `Score de consensus : ${cScore}/100 (${nb} votes ACHETER, ${ns} votes VENDRE, ${4-nb-ns} votes ATTENDRE).`,
-      veto?`🛑 VETO SENTINEL activé (risque ${riskScore.toFixed(0)}/100) — décision forcée sur ATTENDRE.`:`✅ Pas de veto SENTINEL (risque ${riskScore.toFixed(0)}/100 acceptable).`,
-      `Décision finale : ${actionLabel(fAct)} à ${fmt(price,sym)} avec ${(fConf*100).toFixed(0)}% de confiance.`,
-    ]
-  };
+      `TRADEX=${act}, SENTINEL=${sentRec}, ORACLE=${macBias}, SCOUT=${sbias}.`,
+      `Poids : TRADEX 35% + SENTINEL 25% (veto si >80) + ORACLE 20% + SCOUT 20%.`,
+      `Consensus : ${cScore}/100 (${nb} ACHETER, ${ns} VENDRE).`,
+      veto?`🛑 VETO (${riskScore.toFixed(0)}/100) — ATTENDRE.`:`✅ Pas de veto (${riskScore.toFixed(0)}/100 OK).`,
+      `Décision : ${actLbl(fAct)} à ${eur(price,sym)} | Confiance : ${(fConf*100).toFixed(0)}%.`
+    ]};
 
   return {tradex,sentinel,oracle,scout,nexus};
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
-function setStatus(id,state,label){
-  const el=document.getElementById('st-'+id)||document.getElementById(id+'-status');
-  if(!el) return;
-  el.className='status-badge '+state;
-  el.innerHTML=`<div class="dot"></div>${label}`;
-}
+// =================================================================
+// HELPERS RENDER
+// =================================================================
+function actLbl(a){return a==='BUY'?'ACHETER':a==='SELL'?'VENDRE':'ATTENDRE'}
+function actIcon(a){return a==='BUY'?'▲':a==='SELL'?'▼':'■'}
+function actCol(a){return a==='BUY'?'var(--green)':a==='SELL'?'var(--red)':'var(--yellow)'}
 
 let rid=0;
-function mkReason(steps,color){
+function mkR(steps,col){
   const id='r'+(rid++);
   return `
-<button class="reason-toggle" onclick="tog('${id}',this)">
-  <span>🧠 Voir le raisonnement de l’agent (${steps.length} étapes)</span>
-  <span class="arrow" id="ar-${id}">▼</span>
+<button class="reason-btn" onclick="togR('${id}',this)">
+  <span>🧠 Raisonnement (${steps.length} étapes)</span>
+  <span class="r-arr" id="ra-${id}">▼</span>
 </button>
-<div class="reason-box" id="${id}">
-${steps.map((s,i)=>`
-  <div class="reason-step" style="animation-delay:${i*.07}s">
-    <div class="step-n" style="background:${color}22;color:${color}">${i+1}</div>
-    <div class="reason-text">${s}</div>
-  </div>`).join('')}
+<div class="reason-list" id="${id}">
+${steps.map((s,i)=>`<div class="r-step" style="animation-delay:${i*.06}s"><div class="r-num" style="background:${col}22;color:${col}">${i+1}</div><div class="r-txt">${s}</div></div>`).join('')}
 </div>`;
 }
-function tog(id,btn){
+function togR(id,btn){
   document.getElementById(id).classList.toggle('open');
-  document.getElementById('ar-'+id).classList.toggle('open');
+  document.getElementById('ra-'+id).classList.toggle('open');
 }
-function progBar(pct,color){
-  return `<div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>`;
+function bar(pct,col){
+  return `<div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div>`;
 }
-function actionLabel(act){
-  return act==='BUY'?'ACHETER':act==='SELL'?'VENDRE':'ATTENDRE';
+function setSt(id,state,lbl){
+  const el=document.getElementById('st-'+id)||document.getElementById(id+'-st');
+  if(!el)return;
+  el.className='ac-badge '+state;
+  el.innerHTML=`<div class="d"></div>${lbl}`;
 }
-function verdictIcon(act){
-  return act==='BUY'?'▲ ACHETER':act==='SELL'?'▼ VENDRE':'■ ATTENDRE';
+function setAP(id,state,lbl){
+  const el=document.getElementById('ap-'+id);
+  if(!el)return;
+  el.className='ap-status '+state;
+  el.textContent=lbl;
 }
 
-// ============================================================
-// RENDER AGENTS — prix en euros
-// ============================================================
-function renderTradex(d){
-  const sym=currentCoin;
-  const col=d.act==='BUY'?'var(--green)':d.act==='SELL'?'var(--red)':'var(--yellow)';
+// =================================================================
+// RENDER AGENTS
+// =================================================================
+function renderTradex(d,sym){
+  const c=actCol(d.act);
   return `
-<div class="verdict-pill ${d.act}">${verdictIcon(d.act)}</div>
-<div class="prog-wrap"><div class="prog-label"><span>Confiance</span><span>${(d.conf*100).toFixed(0)}%</span></div>${progBar(d.conf*100,col)}</div>
-<div class="stat-row"><span class="stat-label">RSI (14)</span><span class="stat-val ${d.rsi<35?'g':d.rsi>65?'r':'y'}">${d.rsi.toFixed(1)}</span></div>
-<div class="stat-row"><span class="stat-label">MACD</span><span class="stat-val ${d.macd>0?'g':'r'}">${d.macd.toFixed(0)}</span></div>
-<div class="stat-row"><span class="stat-label">Régime marché</span><span class="stat-val y">${d.regime}</span></div>
-<div class="stat-row"><span class="stat-label">Stop-Loss</span><span class="stat-val r">${fmt(d.sl,sym)}</span></div>
-<div class="stat-row"><span class="stat-label">Objectif de gain</span><span class="stat-val g">${fmt(d.tp,sym)}</span></div>
-${mkReason(d.steps,'var(--blue)')}`;
+<div class="verdict ${d.act}">${actIcon(d.act)} ${actLbl(d.act)}</div>
+<div class="bar-wrap"><div class="bar-lbl"><span>Confiance</span><span>${(d.conf*100).toFixed(0)}%</span></div>${bar(d.conf*100,c)}</div>
+<div class="kv"><span class="kv-k">RSI (14)</span><span class="kv-v ${d.rsi<35?'g':d.rsi>65?'r':'y'}">${d.rsi.toFixed(1)}</span></div>
+<div class="kv"><span class="kv-k">MACD</span><span class="kv-v ${d.macd>0?'g':'r'}">${d.macd.toFixed(0)}</span></div>
+<div class="kv"><span class="kv-k">Régime</span><span class="kv-v y">${d.regime}</span></div>
+<div class="kv"><span class="kv-k">Stop-Loss</span><span class="kv-v r">${eur(d.sl,sym)}</span></div>
+<div class="kv"><span class="kv-k">Objectif</span><span class="kv-v g">${eur(d.tp,sym)}</span></div>
+${mkR(d.steps,'#3b82f6')}`;
 }
-
 function renderSentinel(d){
   const col=d.riskScore>70?'var(--red)':d.riskScore>40?'var(--yellow)':'var(--green)';
   const pill=d.veto?'SELL':d.sentRec==='AUGMENTER'?'BUY':d.sentRec==='REDUIRE'?'SELL':'HOLD';
   return `
-<div class="verdict-pill ${pill}">${d.veto?'🛑 VETO RISQUE':d.sentRec==='AUGMENTER'?'✓ RISQUE FAIBLE':d.sentRec==='REDUIRE'?'⚠ RISQUE ÉLEVÉ':'■ RISQUE MODÉRÉ'}</div>
-<div class="prog-wrap"><div class="prog-label"><span>Score de risque</span><span>${d.riskScore.toFixed(0)}/100</span></div>${progBar(d.riskScore,col)}</div>
-<div class="stat-row"><span class="stat-label">Position max (de vos €)</span><span class="stat-val b">${d.maxPos.toFixed(1)}%</span></div>
-<div class="stat-row"><span class="stat-label">Alertes actives</span><span class="stat-val y">${d.warns.length}</span></div>
-${d.warns.map(w=>`<div style="font-size:.7rem;color:var(--orange);padding:.25rem 0">⚠ ${w}</div>`).join('')}
-${mkReason(d.steps,'var(--green)')}`;
+<div class="verdict ${pill}">${d.veto?'🛑 VETO':d.sentRec==='AUGMENTER'?'✓ FAIBLE':d.sentRec==='REDUIRE'?'⚠ ELEVÉ':'■ MODÉRÉ'}</div>
+<div class="bar-wrap"><div class="bar-lbl"><span>Risque</span><span>${d.riskScore.toFixed(0)}/100</span></div>${bar(d.riskScore,col)}</div>
+<div class="kv"><span class="kv-k">Position max (€)</span><span class="kv-v p">${d.maxPos.toFixed(1)}%</span></div>
+<div class="kv"><span class="kv-k">Alertes</span><span class="kv-v y">${d.warns.length}</span></div>
+${d.warns.map(w=>`<div style="font-size:.65rem;color:var(--yellow);padding:.2rem 0">⚠ ${w}</div>`).join('')}
+${mkR(d.steps,'#00c076')}`;
 }
-
 function renderOracle(d){
-  const m={'EUPHORIE':'BUY','OPTIMISME':'BUY','NEUTRE':'HOLD','PEUR':'SELL','PANIQUE':'SELL'};
+  const m={EUPHORIE:'BUY',OPTIMISME:'BUY',NEUTRE:'HOLD',PEUR:'SELL',PANIQUE:'SELL'};
   const pill=m[d.sent]||'HOLD';
-  const col=pill==='BUY'?'var(--green)':pill==='SELL'?'var(--red)':'var(--yellow)';
   return `
-<div class="verdict-pill ${pill}">${d.sent}</div>
-<div class="stat-row"><span class="stat-label">Biais macro</span><span class="stat-val ${d.macBias==='HAUSSIER'?'g':d.macBias==='BAISSIER'?'r':'y'}">${d.macBias}</span></div>
-<div class="stat-row"><span class="stat-label">Phase de marché</span><span class="stat-val p">${d.phase}</span></div>
-<div class="prog-wrap"><div class="prog-label"><span>Certitude</span><span>${(d.oconf*100).toFixed(0)}%</span></div>${progBar(d.oconf*100,col)}</div>
-<div style="font-size:.72rem;color:var(--muted);line-height:1.65;margin:.4rem 0">${d.narratives.map(n=>`• ${n}`).join('<br>')}</div>
-${mkReason(d.steps,'var(--purple)')}`;
+<div class="verdict ${pill}">${d.sent}</div>
+<div class="kv"><span class="kv-k">Biais macro</span><span class="kv-v ${d.macBias==='HAUSSIER'?'g':d.macBias==='BAISSIER'?'r':'y'}">${d.macBias}</span></div>
+<div class="kv"><span class="kv-k">Phase</span><span class="kv-v p">${d.phase}</span></div>
+<div class="bar-wrap"><div class="bar-lbl"><span>Certitude</span><span>${(d.oconf*100).toFixed(0)}%</span></div>${bar(d.oconf*100,actCol(pill))}</div>
+<div style="font-size:.67rem;color:var(--text3);line-height:1.6;margin:.35rem 0">${d.narratives.map(n=>`• ${n}`).join('<br>')}</div>
+${mkR(d.steps,'#a855f7')}`;
 }
-
-function renderScout(d){
+function renderScout(d,sym){
   const pill=d.sbias==='HAUSSIER'?'BUY':d.sbias==='BAISSIER'?'SELL':'HOLD';
-  const sym=currentCoin;
   return `
-<div class="verdict-pill ${pill}">${d.sbias}</div>
-<div style="margin-bottom:.75rem">${d.detected.map(p=>`
-  <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--border);font-size:.73rem">
-    <span style="color:${p.t==='haussier'?'var(--green)':'var(--red)'}">${p.emoji} ${p.n}</span>
-    <span style="color:var(--muted)">${p.t}</span>
-  </div>`).join('')}</div>
-<div class="stat-row"><span class="stat-label">Support (plancher) en €</span><span class="stat-val g">${fmt(d.sup1,sym)}</span></div>
-<div class="stat-row"><span class="stat-label">Résistance (plafond) en €</span><span class="stat-val r">${fmt(d.res1,sym)}</span></div>
-<div class="prog-wrap"><div class="prog-label"><span>Probabilité de hausse</span><span>${(d.bkProb*100).toFixed(0)}%</span></div>${progBar(d.bkProb*100,'var(--yellow)')}</div>
-${mkReason(d.steps,'var(--yellow)')}`;
+<div class="verdict ${pill}">${d.sbias}</div>
+<div style="margin:.5rem 0">${d.detected.map(p=>`<div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--border);font-size:.68rem"><span style="color:${p.t==='haussier'?'var(--green)':'var(--red)'}">${p.e} ${p.n}</span><span style="color:var(--text3)">${p.t}</span></div>`).join('')}</div>
+<div class="kv"><span class="kv-k">Support (€)</span><span class="kv-v g">${eur(d.sup1,sym)}</span></div>
+<div class="kv"><span class="kv-k">Résistance (€)</span><span class="kv-v r">${eur(d.res1,sym)}</span></div>
+<div class="bar-wrap"><div class="bar-lbl"><span>Prob. hausse</span><span>${(d.bkProb*100).toFixed(0)}%</span></div>${bar(d.bkProb*100,'var(--yellow)')}</div>
+${mkR(d.steps,'#f5a623')}`;
+}
+function renderNexusMini(nx,sym){
+  const c=actCol(nx.fAct);
+  return `
+${nx.veto?`<div class="veto-banner">🛑 VETO SENTINEL — ATTENDRE</div>`:''}
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:.85rem">
+  <div style="font-size:1.6rem;font-weight:900;color:${c}">${actIcon(nx.fAct)} ${actLbl(nx.fAct)}</div>
+  <div><div style="font-size:.6rem;color:var(--text3)">Confiance</div><div style="font-size:1.1rem;font-weight:800;color:${c}">${(nx.fConf*100).toFixed(0)}%</div></div>
+  <div style="margin-left:auto"><div style="font-size:.6rem;color:var(--text3)">Consensus</div><div style="font-size:1.1rem;font-weight:800;color:#7c5cf6">${nx.cScore}/100</div></div>
+</div>
+<div class="votes-row">${Object.entries(nx.votes).map(([ag,v])=>`<div class="vote-chip ${v}"><strong>${ag}</strong> → ${actLbl(v)}</div>`).join('')}</div>
+${mkR(nx.steps,'#5741d9')}`;
 }
 
-function renderNexus(d){
-  const sym=currentCoin;
-  const fCol=d.fAct==='BUY'?'var(--green)':d.fAct==='SELL'?'var(--red)':'var(--yellow)';
-  const chips=Object.entries(d.votes).map(([ag,v])=>`<div class="vote-chip ${v}"><strong>${ag}</strong> &rarr; ${actionLabel(v)}</div>`).join('');
-  return `
-${d.veto?`<div class="veto-banner">🛑 <strong>VETO SENTINEL activé :</strong> Le risque est trop élevé. Signal bloqué sur ATTENDRE pour protéger vos euros.</div>`:''}
-<div style="display:flex;flex-wrap:wrap;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
-  <div><div style="font-size:.68rem;color:var(--muted);margin-bottom:.3rem">Décision finale</div>
-       <div style="font-size:2.2rem;font-weight:900;color:${fCol}">${d.fAct==='BUY'?'▲':d.fAct==='SELL'?'▼':'■'} ${actionLabel(d.fAct)}</div></div>
-  <div><div style="font-size:.68rem;color:var(--muted);margin-bottom:.3rem">Confiance totale</div>
-       <div style="font-size:2rem;font-weight:900;color:${fCol}">${(d.fConf*100).toFixed(0)}%</div></div>
-  <div style="margin-left:auto">
-       <div style="font-size:.68rem;color:var(--muted);margin-bottom:.3rem">Score de consensus</div>
-       <div style="font-size:2rem;font-weight:900;color:var(--cyan)">${d.cScore}/100</div></div>
-</div>
-<div style="margin-bottom:1rem">
-  <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">Vote de chaque agent</div>
-  <div class="votes-row">${chips}</div>
-</div>
-<div class="nexus-levels">
-  <div class="nlevel"><div class="nlevel-label">Prix d’entrée</div><div class="nlevel-val" style="color:var(--blue)">${fmt(d.price,sym)}</div></div>
-  <div class="nlevel"><div class="nlevel-label">Stop-Loss (perte max)</div><div class="nlevel-val" style="color:var(--red)">${fmt(d.sl,sym)}</div></div>
-  <div class="nlevel"><div class="nlevel-label">Objectif bénéfice</div><div class="nlevel-val" style="color:var(--green)">${fmt(d.tp,sym)}</div></div>
-</div>
-<div class="synthesis-box"><strong style="color:var(--cyan)">Pourquoi cette décision ?</strong><br><br>${d.synth}</div>
-${mkReason(d.steps,'var(--cyan)')}`;
-}
-
-// ============================================================
-// LANCER L'ANALYSE
-// ============================================================
+// =================================================================
+// ANALYSE PRINCIPALE
+// =================================================================
 async function lancerAnalyse(){
-  if(busy) return;
+  if(busy)return;
   busy=true;
-  const btn=document.getElementById('refresh-btn');
+  const btn=document.getElementById('btn-analyze');
   btn.disabled=true; btn.textContent='⏳ Analyse...';
 
   await fetchPrices();
-
-  ['tradex','sentinel','oracle','scout'].forEach(a=>{
-    setStatus(a,'thinking','Analyse...');
-    document.getElementById('bd-'+a).innerHTML=`<div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En train de raisonner...</div>`;
-  });
-  document.getElementById('nexus-status').className='status-badge thinking';
-  document.getElementById('nexus-status').innerHTML='<div class="dot"></div>Orchestration...';
-  document.getElementById('nexus-body').innerHTML=`<div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente des 4 agents...</div>`;
-
   const sym=currentCoin;
   const data=genData(sym);
-  document.getElementById('signal-asset').textContent=sym+' / EUR';
+  agentData[sym]=data;
 
-  const agents=[
-    {id:'tradex',  fn:()=>renderTradex(data.tradex)},
-    {id:'sentinel',fn:()=>renderSentinel(data.sentinel)},
-    {id:'oracle',  fn:()=>renderOracle(data.oracle)},
-    {id:'scout',   fn:()=>renderScout(data.scout)},
+  // Reset
+  ['tradex','sentinel','oracle','scout'].forEach(a=>{
+    setSt(a,'thinking','...');
+    setAP(a,'thinking','...');
+    document.getElementById('bd-'+a).innerHTML=`<div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>Raisonnement en cours...</div>`;
+  });
+  setAP('nexus','thinking','...');
+  document.getElementById('nexus-badge').className='ac-badge thinking';
+  document.getElementById('nexus-badge').innerHTML='<div class="d"></div>...';
+  document.getElementById('nexus-mini').innerHTML=`<div class="thinking-row"><div class="dots"><span></span><span></span><span></span></div>En attente des agents...</div>`;
+
+  // Stagger agents
+  const defs=[
+    {id:'tradex',  fn:()=>renderTradex(data.tradex,sym),  col:'#3b82f6'},
+    {id:'sentinel',fn:()=>renderSentinel(data.sentinel),   col:'#00c076'},
+    {id:'oracle',  fn:()=>renderOracle(data.oracle),       col:'#a855f7'},
+    {id:'scout',   fn:()=>renderScout(data.scout,sym),     col:'#f5a623'},
   ];
-  [700,1350,2000,2650].forEach((delay,i)=>{
+  [600,1200,1800,2400].forEach((delay,i)=>{
     setTimeout(()=>{
-      document.getElementById('bd-'+agents[i].id).innerHTML=agents[i].fn();
-      setStatus(agents[i].id,'done','Terminé ✓');
+      document.getElementById('bd-'+defs[i].id).innerHTML=defs[i].fn();
+      setSt(defs[i].id,'done','✓');
+      setAP(defs[i].id,'done','✓');
     },delay);
   });
 
   setTimeout(()=>{
     const nx=data.nexus;
-    document.getElementById('nexus-body').innerHTML=renderNexus(nx);
-    document.getElementById('nexus-status').className='status-badge done';
-    document.getElementById('nexus-status').innerHTML='<div class="dot"></div>Décision prête ✓';
+    // NEXUS
+    document.getElementById('nexus-mini').innerHTML=renderNexusMini(nx,sym);
+    document.getElementById('nexus-badge').className='ac-badge done';
+    document.getElementById('nexus-badge').innerHTML='<div class="d"></div>✓ Décision';
+    setAP('nexus','done','✓');
+    // Synth full
+    document.getElementById('nexus-synth').innerHTML=`<strong style="color:#7c5cf6">Pourquoi cette décision ?</strong><br><br>${nx.synth}`;
+    document.getElementById('nexus-votes').innerHTML=Object.entries(nx.votes).map(([ag,v])=>`<div class="vote-chip ${v}"><strong>${ag}</strong> → ${actLbl(v)}</div>`).join('');
+    document.getElementById('nexus-full-wrap').style.display='block';
 
-    // Hero
-    const fCol=nx.fAct==='BUY'?'var(--green)':nx.fAct==='SELL'?'var(--red)':'var(--yellow)';
-    document.getElementById('main-circle').className='signal-circle '+nx.fAct;
-    document.getElementById('main-icon').textContent=nx.fAct==='BUY'?'⬆️':nx.fAct==='SELL'?'⬇️':'⏸️';
-    document.getElementById('main-word').textContent=actionLabel(nx.fAct);
-    document.getElementById('main-word').className='signal-word '+nx.fAct;
-    document.getElementById('main-sub').textContent='NEXUS a décidé';
-    document.getElementById('conf-ring').textContent=`Confiance : ${(nx.fConf*100).toFixed(0)}%`;
-    document.getElementById('lv-entry').textContent=fmt(nx.price,sym);
-    document.getElementById('lv-stop').textContent=fmt(nx.sl,sym);
-    document.getElementById('lv-tp').textContent=fmt(nx.tp,sym);
-    const slPct=Math.abs((nx.sl-nx.price)/nx.price*100).toFixed(1);
-    const tpPct=Math.abs((nx.tp-nx.price)/nx.price*100).toFixed(1);
-    document.getElementById('lv-stop-info').textContent=`Perte limitée à -${slPct}% en euros`;
-    document.getElementById('lv-tp-info').textContent=`Bénéfice potentiel +${tpPct}% en euros`;
-    document.getElementById('explain-left').innerHTML=`<strong>Ce que le bot recommande pour ${sym}/EUR :</strong><br><br>${nx.synth}`;
+    // Hero signal
+    const fCol=actCol(nx.fAct);
+    document.getElementById('sig-circle').className='sig-circle '+nx.fAct;
+    document.getElementById('sig-icon').textContent=nx.fAct==='BUY'?'⬆️':nx.fAct==='SELL'?'⬇️':'⏸️';
+    document.getElementById('sig-lbl').textContent=actLbl(nx.fAct);
+    document.getElementById('sig-lbl').className='sig-lbl '+nx.fAct;
+    document.getElementById('sig-conf').textContent=`Confiance ${(nx.fConf*100).toFixed(0)}% • Score ${nx.cScore}/100`;
+    document.getElementById('sig-asset').textContent=sym+' / EUR';
+
+    // Levels
+    const pr=prices[sym]||{price:nx.price,change:0};
+    document.getElementById('levels-coin').textContent=sym;
+    document.getElementById('lv-current').textContent=eur(pr.price,sym);
+    document.getElementById('lv-current-chg').textContent=pct(pr.change);
+    document.getElementById('lv-current-chg').className='level-badge '+(pr.change>=0?'pos':'neg');
+    document.getElementById('lv-entry').textContent=eur(nx.price,sym);
+    document.getElementById('lv-stop').textContent=eur(nx.sl,sym);
+    document.getElementById('lv-tp').textContent=eur(nx.tp,sym);
+    document.getElementById('lv-stop-pct').textContent=pct(((nx.sl-nx.price)/nx.price)*100);
+    document.getElementById('lv-tp-pct').textContent=pct(((nx.tp-nx.price)/nx.price)*100);
+    document.getElementById('lv-risk').textContent=data.sentinel.riskScore.toFixed(0)+'/100';
+    document.getElementById('lv-risk').style.color=data.sentinel.riskScore>70?'var(--red)':data.sentinel.riskScore>40?'var(--yellow)':'var(--green)';
+    document.getElementById('lv-regime').textContent=data.tradex.regime;
 
     busy=false; btn.disabled=false; btn.textContent='⟳ Analyser';
-  },3500);
+  },3100);
 }
 
-function selCrypto(sym,btn){
-  document.querySelectorAll('.asset-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+// =================================================================
+// NAVIGATION
+// =================================================================
+function showTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='positions') renderPositions(currentCoin);
+}
+
+function selectCoin(sym){
   currentCoin=sym;
+  // Update active states
+  document.querySelectorAll('.coin-row').forEach(r=>r.classList.remove('active'));
+  document.querySelectorAll('.tp-item').forEach(r=>r.classList.remove('active'));
+  renderTopbar();
+  renderSidebar();
+  document.getElementById('sig-asset').textContent=sym+' / EUR';
+  document.getElementById('levels-coin').textContent=sym;
+  document.getElementById('pos-coin-title').textContent=sym;
+  const activePanel=document.querySelector('.panel.active');
+  if(activePanel&&activePanel.id==='panel-positions') renderPositions(sym);
   lancerAnalyse();
 }
 
