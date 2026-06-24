@@ -1,1080 +1,897 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEBULA STORE — Commerce Galactique</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS — Commerce Galactique</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#000510;--electric:#0055ff;--plasma:#7700ff;
+  --cyan:#00d4ff;--gold:#c8a400;
+  --text:#b8d4ff;--dim:rgba(180,210,255,.45);
+  --card:rgba(0,12,40,.75);--border:rgba(0,85,255,.18);
+  --border-hi:rgba(0,212,255,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--text);font-family:'Space Grotesk',system-ui,sans-serif;overflow-x:hidden;cursor:none}
 
-        :root {
-            --purple: #b34dff;
-            --cyan: #00f5ff;
-            --blue: #0066ff;
-            --space: #030015;
-            --card: rgba(10,5,40,0.85);
-        }
+/* ── CURSOR ── */
+#cur{position:fixed;width:18px;height:18px;border:1px solid var(--cyan);border-radius:50%;pointer-events:none;z-index:99999;transition:transform .12s,border-color .2s;mix-blend-mode:difference}
+#cur-dot{position:fixed;width:3px;height:3px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:99999}
+@media(hover:none){#cur,#cur-dot{display:none}body{cursor:default}}
 
-        html { scroll-behavior: smooth; }
+/* ── FIXED CANVASES ── */
+#space-cv{position:fixed;inset:0;z-index:0;pointer-events:none}
+#vortex-cv{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:1;pointer-events:none;
+  width:min(800px,100vmin);height:min(800px,100vmin);
+  transition:opacity .6s;
+}
 
-        body {
-            background: var(--space);
-            color: #fff;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            overflow-x: hidden;
-        }
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;width:100%;z-index:1000;
+  padding:1.1rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,3,14,.6);backdrop-filter:blur(28px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+}
+nav::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  animation:nav-scan 5s linear infinite;
+}
+@keyframes nav-scan{from{background-position:-100% 0}to{background-position:200% 0}}
 
-        /* ── SPACE CANVAS ── */
-        #space-canvas {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0; pointer-events: none;
-        }
+.logo{
+  font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;letter-spacing:6px;
+  background:linear-gradient(135deg,#fff 30%,var(--cyan) 70%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.logo::before{content:'◈ ';-webkit-text-fill-color:var(--cyan)}
 
-        /* ── NAV ── */
-        nav {
-            position: fixed; top: 0; width: 100%;
-            z-index: 1000; padding: 1rem 2.5rem;
-            display: flex; align-items: center; justify-content: space-between;
-            background: rgba(3,0,21,0.65);
-            backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(179,77,255,0.25);
-            transition: background 0.3s;
-        }
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{
+  font-family:'Orbitron',monospace;font-size:.6rem;font-weight:600;
+  letter-spacing:3px;text-transform:uppercase;color:var(--dim);text-decoration:none;
+  position:relative;padding:.25rem 0;transition:color .3s;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:var(--cyan);transform:scaleX(0);transform-origin:left;transition:transform .3s;
+}
+.nav-links a:hover{color:var(--cyan)}
+.nav-links a:hover::after{transform:scaleX(1)}
 
-        .logo {
-            font-size: 1.4rem; font-weight: 900;
-            letter-spacing: 4px; text-transform: uppercase;
-            background: linear-gradient(90deg, var(--purple), var(--cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            user-select: none;
-        }
+.nav-right{display:flex;align-items:center;gap:1.8rem}
+.srch-wrap{position:relative}
+.srch-wrap input{
+  background:rgba(0,85,255,.05);border:1px solid var(--border);
+  padding:.45rem 1rem .45rem 2.2rem;color:var(--text);font-size:.78rem;
+  width:170px;outline:none;letter-spacing:1px;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%);
+  transition:all .3s;
+}
+.srch-wrap input:focus{border-color:var(--cyan);width:210px;background:rgba(0,212,255,.04)}
+.srch-wrap::before{content:'⌕';position:absolute;left:.7rem;top:50%;transform:translateY(-50%);color:var(--dim);font-size:.85rem;pointer-events:none}
 
-        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-        .nav-links a {
-            color: rgba(255,255,255,0.7); text-decoration: none;
-            font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
-            transition: all 0.3s;
-        }
-        .nav-links a:hover { color: var(--cyan); text-shadow: 0 0 12px var(--cyan); }
+.nav-btn{background:none;border:none;cursor:none;font-size:1.05rem;color:var(--text);position:relative;transition:color .25s}
+.nav-btn:hover{color:var(--cyan)}
+.badge{
+  position:absolute;top:-5px;right:-7px;background:var(--electric);
+  color:#fff;width:15px;height:15px;font-size:.55rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;
+}
 
-        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+/* ── HERO ── */
+#hero{
+  height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;z-index:2;overflow:hidden;
+}
 
-        .search-wrap { position: relative; }
-        .search-wrap input {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(179,77,255,0.25);
-            border-radius: 20px; padding: 0.5rem 1rem 0.5rem 2.4rem;
-            color: #fff; font-size: 0.82rem; width: 180px; outline: none;
-            transition: all 0.3s;
-        }
-        .search-wrap input:focus {
-            border-color: var(--cyan); width: 220px;
-            box-shadow: 0 0 18px rgba(0,245,255,0.18);
-        }
-        .search-wrap::before {
-            content: '🔍'; position: absolute;
-            left: 0.7rem; top: 50%; transform: translateY(-50%);
-            font-size: 0.8rem; pointer-events: none;
-        }
+.hero-content{position:relative;z-index:3;text-align:center;padding:0 1rem}
 
-        .icon-btn {
-            background: none; border: none; cursor: pointer;
-            font-size: 1.25rem; position: relative; transition: transform 0.25s;
-            color: white;
-        }
-        .icon-btn:hover { transform: scale(1.2); }
+.eyebrow{
+  font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:8px;
+  color:var(--cyan);text-transform:uppercase;margin-bottom:1.8rem;
+  display:flex;align-items:center;justify-content:center;gap:1.2rem;
+}
+.eyebrow::before,.eyebrow::after{content:'';width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan))}
+.eyebrow::after{transform:scaleX(-1)}
 
-        .badge {
-            position: absolute; top: -7px; right: -7px;
-            background: var(--purple); color: #fff;
-            border-radius: 50%; width: 17px; height: 17px;
-            font-size: 0.6rem; font-weight: 700;
-            display: flex; align-items: center; justify-content: center;
-            animation: badge-pulse 2s infinite;
-        }
-        @keyframes badge-pulse {
-            0%,100% { box-shadow: 0 0 0 0 rgba(179,77,255,.7); }
-            50%      { box-shadow: 0 0 0 6px rgba(179,77,255,0); }
-        }
+.hero-title{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(3rem,10vw,8.5rem);font-weight:900;
+  letter-spacing:12px;line-height:.9;text-transform:uppercase;
+}
+.hero-title .t1{
+  display:block;
+  background:linear-gradient(160deg,#fff 0%,#c8e8ff 35%,var(--cyan) 65%,var(--plasma) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 50px rgba(0,212,255,.25));
+}
+.hero-title .t2{
+  display:block;font-size:42%;letter-spacing:20px;margin-top:.3em;
+  background:linear-gradient(135deg,var(--gold) 0%,#fff8dc 50%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 20px rgba(200,164,0,.35));
+}
 
-        /* ── HERO ── */
-        #hero {
-            position: relative; height: 100vh;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            z-index: 1; overflow: hidden;
-        }
+.hero-sub{
+  margin:2.5rem 0 3.5rem;font-size:clamp(.82rem,1.5vw,.95rem);
+  color:var(--dim);letter-spacing:4px;min-height:1.4rem;font-weight:300;
+}
+.type-cur{color:var(--cyan);animation:blink .65s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-        #vortex-canvas {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%,-50%);
-            z-index: 1; pointer-events: none;
-        }
+.cta-row{display:flex;gap:1.5rem;justify-content:center}
 
-        .hero-content {
-            position: relative; z-index: 2;
-            text-align: center; padding: 0 1rem;
-        }
+.btn-pri{
+  padding:.85rem 2.4rem;background:transparent;
+  border:1px solid var(--cyan);color:var(--cyan);
+  font-family:'Orbitron',monospace;font-size:.65rem;font-weight:600;
+  letter-spacing:4px;text-transform:uppercase;cursor:none;overflow:hidden;
+  position:relative;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+  transition:color .32s;
+}
+.btn-pri::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:translateX(-101%);transition:transform .32s ease;z-index:0}
+.btn-pri:hover{color:var(--void)}
+.btn-pri:hover::before{transform:translateX(0)}
+.btn-pri span{position:relative;z-index:1}
 
-        .hero-title {
-            font-size: clamp(2.8rem,8vw,7rem);
-            font-weight: 900; letter-spacing: 8px;
-            text-transform: uppercase;
-            position: relative; line-height: 1.05;
-        }
-        .hero-title .main {
-            background: linear-gradient(135deg,#fff 20%,var(--cyan) 55%,var(--purple) 85%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .hero-title .glitch-layer {
-            position: absolute; inset: 0;
-            background: linear-gradient(135deg,#fff 20%,var(--cyan) 55%,var(--purple) 85%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            pointer-events: none;
-        }
-        .glitch-a { animation: ga 4s infinite; clip-path: polygon(0 25%,100% 25%,100% 45%,0 45%); }
-        .glitch-b { animation: gb 4s infinite; clip-path: polygon(0 65%,100% 65%,100% 80%,0 80%); }
+.btn-sec{
+  padding:.85rem 2.4rem;background:rgba(119,0,255,.08);
+  border:1px solid rgba(119,0,255,.3);color:var(--dim);
+  font-family:'Orbitron',monospace;font-size:.65rem;font-weight:600;
+  letter-spacing:4px;text-transform:uppercase;cursor:none;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 0px) 100%,0 100%,0 0);
+  transition:all .3s;
+}
+.btn-sec:hover{border-color:rgba(119,0,255,.7);color:white;background:rgba(119,0,255,.2)}
 
-        @keyframes ga {
-            0%,88%,100% { transform: translateX(0); opacity: 0; }
-            90% { transform: translateX(-5px); opacity: .85; }
-            93% { transform: translateX(5px); opacity: .85; }
-            96% { transform: translateX(-2px); opacity: .85; }
-            98% { opacity: 0; }
-        }
-        @keyframes gb {
-            0%,86%,100% { transform: translateX(0); opacity: 0; }
-            88% { transform: translateX(5px); opacity: .85; }
-            91% { transform: translateX(-5px); opacity: .85; }
-            95% { transform: translateX(2px); opacity: .85; }
-            97% { opacity: 0; }
-        }
+/* HUD */
+.hud{position:absolute;inset:0;pointer-events:none;z-index:2;display:flex;align-items:center;justify-content:center}
+.hud-corner{position:absolute;font-family:'Orbitron',monospace;line-height:1.4}
+.hud-tl{top:8rem;left:2.5rem}.hud-tr{top:8rem;right:2.5rem;text-align:right}
+.hud-bl{bottom:5rem;left:2.5rem}.hud-br{bottom:5rem;right:2.5rem;text-align:right}
+.hud-label{font-size:.5rem;letter-spacing:3px;color:rgba(0,212,255,.35);text-transform:uppercase}
+.hud-val{font-size:.75rem;color:rgba(0,212,255,.55);font-weight:600}
+.hud-line{width:80px;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);margin-top:.4rem;opacity:.3}
+.hud-tr .hud-line{background:linear-gradient(90deg,transparent,var(--cyan));margin-left:auto}
 
-        .hero-sub {
-            margin: 1.5rem 0 3rem;
-            font-size: clamp(.95rem,2.5vw,1.3rem);
-            color: rgba(255,255,255,.65);
-            letter-spacing: 4px; min-height: 2rem;
-        }
-        .cursor { color: var(--cyan); animation: cur .7s infinite; }
-        @keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:4px;
+  color:rgba(0,212,255,.3);text-align:center;
+  animation:hint 2s ease-in-out infinite;
+}
+@keyframes hint{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
 
-        .cta {
-            display: inline-flex; align-items: center; gap: .6rem;
-            padding: 1rem 3rem; border: none; border-radius: 50px;
-            background: linear-gradient(135deg, var(--purple), var(--cyan));
-            color: #fff; font-size: 1rem; font-weight: 700;
-            letter-spacing: 3px; text-transform: uppercase;
-            cursor: pointer; overflow: hidden; position: relative;
-            animation: cta-pulse 2.5s ease-in-out infinite;
-            transition: transform .3s;
-        }
-        .cta:hover { transform: scale(1.06); }
-        .cta .cta-shine {
-            position: absolute; inset: 0;
-            background: conic-gradient(transparent,rgba(255,255,255,.28),transparent 30%);
-            animation: spin-shine 2s linear infinite;
-        }
-        .cta span { position: relative; z-index: 1; }
-        @keyframes spin-shine { to { transform: rotate(360deg); } }
-        @keyframes cta-pulse {
-            0%,100% { box-shadow: 0 0 20px rgba(179,77,255,.5),0 0 40px rgba(0,245,255,.18); }
-            50%      { box-shadow: 0 0 50px rgba(179,77,255,.8),0 0 90px rgba(0,245,255,.4); }
-        }
+/* ── SECTIONS ── */
+.pg-section{
+  min-height:100vh;padding:8rem 3rem 5rem;
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+  background:linear-gradient(180deg,rgba(0,3,12,0) 0%,rgba(0,3,12,.92) 8%,rgba(0,3,12,.92) 92%,rgba(0,3,12,0) 100%);
+}
 
-        .scroll-hint {
-            position: absolute; bottom: 2rem; left: 50%;
-            transform: translateX(-50%);
-            display: flex; flex-direction: column; align-items: center; gap: .4rem;
-            color: rgba(255,255,255,.35); font-size: .72rem; letter-spacing: 3px;
-            animation: hint-bounce 2s ease-in-out infinite;
-        }
-        @keyframes hint-bounce {
-            0%,100% { transform: translateX(-50%) translateY(0); }
-            50%      { transform: translateX(-50%) translateY(10px); }
-        }
+.sec-inner{
+  width:100%;max-width:1280px;
+  opacity:0;transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.16,1,.3,1);
+}
+.pg-section:nth-of-type(odd)  .sec-inner{transform:perspective(1100px) rotateY(-50deg) translateX(-180px) scale(.92)}
+.pg-section:nth-of-type(even) .sec-inner{transform:perspective(1100px) rotateY(50deg)  translateX(180px)  scale(.92)}
+.sec-inner.in{opacity:1;transform:none}
 
-        /* ── SECTIONS ── */
-        .orbit-section {
-            position: relative; z-index: 2;
-            padding: 7rem 2rem 5rem;
-            min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
-            opacity: 0;
-            transform: rotate(-18deg) scale(.8) translateX(120px);
-            transition: opacity 1.1s cubic-bezier(.25,.46,.45,.94),
-                        transform 1.1s cubic-bezier(.25,.46,.45,.94);
-        }
-        .orbit-section:nth-of-type(even) {
-            transform: rotate(18deg) scale(.8) translateX(-120px);
-        }
-        .orbit-section.in { opacity: 1; transform: none; }
+.sec-hd{display:flex;align-items:center;gap:2rem;margin-bottom:4rem}
+.sec-num{font-family:'Orbitron',monospace;font-size:5rem;font-weight:900;line-height:1;color:rgba(0,85,255,.1);user-select:none;min-width:80px}
+.sec-label{font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:5px;color:var(--cyan);text-transform:uppercase;margin-bottom:.35rem}
+.sec-title{font-family:'Orbitron',monospace;font-size:clamp(1.6rem,4vw,2.8rem);font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#fff}
+.sec-rule{flex:1;height:1px;background:linear-gradient(90deg,var(--border-hi),transparent)}
 
-        .sec-title {
-            font-size: clamp(1.8rem,5vw,3.2rem);
-            font-weight: 900; letter-spacing: 5px; text-transform: uppercase;
-            text-align: center;
-            background: linear-gradient(90deg, var(--cyan), var(--purple));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .sec-line {
-            width: 90px; height: 2px; border-radius: 2px; margin: .6rem auto 3.5rem;
-            background: linear-gradient(90deg, var(--cyan), var(--purple));
-            box-shadow: 0 0 12px var(--cyan);
-        }
+/* ── PRODUCT GRID ── */
+.p-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.4rem;width:100%}
 
-        /* ── PRODUCT GRID ── */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
-            gap: 1.8rem; max-width: 1200px; width: 100%;
-        }
+.p-card{
+  background:var(--card);border:1px solid var(--border);
+  position:relative;overflow:hidden;cursor:none;
+  transition:transform .38s,border-color .38s;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+}
+.p-card::before{
+  content:'';position:absolute;inset:-2px;z-index:-1;opacity:0;
+  background:linear-gradient(135deg,var(--cyan),var(--plasma),var(--electric));
+  transition:opacity .38s;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+}
+.p-card:hover{transform:translateY(-8px);border-color:var(--border-hi)}
+.p-card:hover::before{opacity:.6}
 
-        .p-card {
-            background: var(--card); border-radius: 18px;
-            border: 1px solid rgba(179,77,255,.18);
-            overflow: hidden; cursor: pointer; position: relative;
-            transition: transform .4s, box-shadow .4s;
-        }
-        .p-card::before {
-            content: ''; position: absolute; inset: -2px;
-            border-radius: 20px; z-index: -1; opacity: 0;
-            background: linear-gradient(135deg, var(--purple), var(--cyan), var(--purple));
-            background-size: 200%; transition: opacity .4s;
-            animation: holo 4s ease infinite;
-        }
-        @keyframes holo {
-            0%,100% { background-position: 0% 50%; }
-            50%      { background-position: 100% 50%; }
-        }
-        .p-card:hover::before { opacity: 1; }
-        .p-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 60px rgba(179,77,255,.3);
-        }
+/* scan line on hover */
+.p-card .sl{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.7),transparent);top:-1px;opacity:0}
+.p-card:hover .sl{opacity:1;animation:sl-anim 1.6s linear infinite}
+@keyframes sl-anim{from{top:-1px}to{top:100%}}
 
-        .p-img {
-            width: 100%; height: 190px;
-            background: linear-gradient(135deg,rgba(179,77,255,.2),rgba(0,245,255,.2));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 3.8rem; position: relative; overflow: hidden;
-        }
-        .p-img::after {
-            content: ''; position: absolute;
-            top: -100%; left: -100%; width: 300%; height: 300%;
-            background: linear-gradient(105deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);
-            animation: shim 3.5s infinite;
-        }
-        @keyframes shim {
-            from { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            to   { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
+.p-vis{
+  height:190px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.p-vis-bg{position:absolute;inset:0;transition:transform .5s}
+.p-card:hover .p-vis-bg{transform:scale(1.06)}
+.vis-a .p-vis-bg{background:radial-gradient(circle at 40% 60%,rgba(119,0,255,.4),rgba(0,3,20,.95))}
+.vis-b .p-vis-bg{background:radial-gradient(circle at 60% 40%,rgba(0,85,255,.4),rgba(0,3,20,.95))}
+.vis-c .p-vis-bg{background:radial-gradient(circle at 30% 70%,rgba(0,150,150,.35),rgba(0,3,20,.95))}
+.vis-d .p-vis-bg{background:radial-gradient(circle at 70% 30%,rgba(180,130,0,.28),rgba(0,3,20,.95))}
 
-        .p-body { padding: 1.4rem; }
-        .p-name { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
-        .p-stars { color: #ffd700; font-size: .85rem; margin-bottom: .8rem; }
-        .p-price { font-size: 1.35rem; font-weight: 900; color: var(--cyan); margin-bottom: 1rem; }
-        .p-old { font-size: .85rem; color: rgba(255,255,255,.35); text-decoration: line-through; margin-left: .4rem; }
+/* holographic shimmer */
+.p-vis::after{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity .4s;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);
+  background-size:200% 200%;
+}
+.p-card:hover .p-vis::after{opacity:1;animation:holo-shim 2s linear infinite}
+@keyframes holo-shim{from{background-position:200% 0}to{background-position:-200% 0}}
 
-        .btn-cart {
-            width: 100%; padding: .75rem;
-            background: linear-gradient(135deg,rgba(179,77,255,.25),rgba(0,245,255,.25));
-            border: 1px solid rgba(179,77,255,.45);
-            border-radius: 10px; color: #fff;
-            font-size: .85rem; font-weight: 700;
-            letter-spacing: 2px; text-transform: uppercase;
-            cursor: pointer; transition: all .3s; overflow: hidden;
-        }
-        .btn-cart:hover {
-            background: linear-gradient(135deg, var(--purple), var(--cyan));
-            box-shadow: 0 0 22px rgba(179,77,255,.55);
-        }
+.p-ico{position:relative;z-index:1;font-size:3.2rem;filter:drop-shadow(0 0 18px rgba(0,212,255,.35));transition:transform .4s,filter .4s}
+.p-card:hover .p-ico{transform:scale(1.12) translateY(-4px);filter:drop-shadow(0 0 28px rgba(0,212,255,.65))}
 
-        /* ── PARTICLES ── */
-        .ptcl {
-            position: fixed; border-radius: 50%;
-            pointer-events: none; z-index: 9999;
-            animation: fly .85s ease-out forwards;
-        }
-        @keyframes fly {
-            0%   { transform: translate(0,0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity: 0; }
-        }
+.p-body{padding:1.4rem;border-top:1px solid var(--border)}
+.p-cat{font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:.4rem}
+.p-name{font-size:.95rem;font-weight:600;color:#ddeeff;margin-bottom:.35rem}
+.p-stars{font-size:.7rem;color:var(--gold);letter-spacing:1px;margin-bottom:.7rem}
+.p-row{display:flex;align-items:center;justify-content:space-between}
+.p-price{font-family:'Orbitron',monospace;font-size:1.15rem;font-weight:700;color:#fff}
+.p-old{font-size:.75rem;color:rgba(255,255,255,.28);text-decoration:line-through;margin-left:.35rem}
 
-        /* ── PROMOS ── */
-        .promo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
-            gap: 2rem; max-width: 1200px; width: 100%;
-        }
-        .promo-card {
-            background: linear-gradient(135deg,rgba(179,77,255,.12),rgba(0,245,255,.08));
-            border: 1px solid rgba(179,77,255,.28);
-            border-radius: 20px; padding: 2rem;
-            text-align: center; position: relative; overflow: hidden;
-            transition: transform .3s;
-        }
-        .promo-card:hover { transform: translateY(-6px); }
-        .promo-card::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg,rgba(179,77,255,.04),transparent);
-            animation: promo-bg 4s ease infinite alternate;
-        }
-        @keyframes promo-bg {
-            from { opacity: .5; } to { opacity: 1; }
-        }
-        .promo-badge {
-            display: inline-block; padding: .3rem 1.1rem;
-            background: linear-gradient(135deg,#ff4d4d,#ff8c00);
-            border-radius: 20px; font-size: .78rem; font-weight: 700;
-            letter-spacing: 2px; margin-bottom: 1rem;
-            animation: badge-glow 2s infinite alternate;
-        }
-        @keyframes badge-glow {
-            from { box-shadow: 0 0 5px #ff4d4d; }
-            to   { box-shadow: 0 0 22px #ff4d4d,0 0 35px #ff8c00; }
-        }
+.btn-add{
+  background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.28);
+  color:var(--cyan);font-family:'Orbitron',monospace;
+  font-size:.55rem;font-weight:600;letter-spacing:2px;
+  padding:.45rem .85rem;cursor:none;transition:all .25s;
+}
+.btn-add:hover{background:var(--cyan);color:var(--void)}
 
-        .countdown {
-            display: flex; justify-content: center; gap: .8rem; margin: 1.4rem 0;
-        }
-        .cd-unit {
-            background: rgba(0,0,0,.5);
-            border: 1px solid rgba(179,77,255,.35);
-            border-radius: 10px; padding: .7rem .9rem; min-width: 58px;
-            text-align: center;
-        }
-        .cd-num {
-            font-size: 2rem; font-weight: 900;
-            color: var(--cyan); line-height: 1;
-            font-variant-numeric: tabular-nums;
-        }
-        .cd-lbl {
-            font-size: .58rem; color: rgba(255,255,255,.45);
-            letter-spacing: 2px; text-transform: uppercase; margin-top: .3rem;
-        }
+/* ── PROMO ── */
+.promo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.4rem;width:100%}
+.promo-card{
+  background:rgba(0,5,18,.82);border:1px solid rgba(119,0,255,.22);
+  padding:2.2rem 1.8rem;position:relative;overflow:hidden;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%);
+  transition:border-color .3s,transform .3s;
+}
+.promo-card:hover{border-color:rgba(119,0,255,.55);transform:translateY(-5px)}
+.promo-card::before{content:'';position:absolute;top:0;right:0;width:50px;height:50px;background:linear-gradient(225deg,rgba(119,0,255,.15),transparent);pointer-events:none}
 
-        /* ── CONTACT ── */
-        .contact-form {
-            max-width: 600px; width: 100%;
-            display: flex; flex-direction: column; gap: 1.4rem;
-        }
-        .f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
-        .f-group { display: flex; flex-direction: column; gap: .5rem; }
-        .f-group label {
-            font-size: .78rem; letter-spacing: 2px;
-            color: rgba(255,255,255,.5); text-transform: uppercase;
-        }
-        .f-group input, .f-group textarea {
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(179,77,255,.28);
-            border-radius: 12px; padding: .9rem 1rem;
-            color: #fff; font-size: .95rem; outline: none; resize: none;
-            transition: all .3s;
-        }
-        .f-group input:focus, .f-group textarea:focus {
-            border-color: var(--cyan);
-            box-shadow: 0 0 20px rgba(0,245,255,.15);
-        }
+.promo-tag{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:2px;
+  padding:.3rem .85rem;border:1px solid #ff4d00;color:#ff6a00;
+  text-transform:uppercase;margin-bottom:1.4rem;
+  animation:tag-glow 2.2s ease-in-out infinite;
+}
+@keyframes tag-glow{0%,100%{box-shadow:0 0 4px rgba(255,77,0,.3)}50%{box-shadow:0 0 14px rgba(255,77,0,.6)}}
 
-        /* ── CART SIDEBAR ── */
-        .cart-side {
-            position: fixed; right: -420px; top: 0;
-            width: 400px; height: 100vh;
-            background: rgba(8,3,35,.97);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(179,77,255,.28);
-            z-index: 9000; padding: 1.8rem;
-            display: flex; flex-direction: column;
-            transition: right .42s cubic-bezier(.25,.46,.45,.94);
-        }
-        .cart-side.open { right: 0; }
+.promo-name{font-family:'Orbitron',monospace;font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:.5rem}
+.promo-desc{font-size:.82rem;color:var(--dim);line-height:1.65;margin-bottom:1.3rem}
+.price-blk{display:flex;align-items:baseline;gap:.9rem;margin-bottom:1.3rem;flex-wrap:wrap}
+.price-new{font-family:'Orbitron',monospace;font-size:1.9rem;font-weight:900;color:var(--cyan)}
+.price-orig{font-size:.8rem;color:rgba(255,255,255,.28);text-decoration:line-through}
+.price-save{font-family:'Orbitron',monospace;font-size:.6rem;color:#ff6a00;background:rgba(255,106,0,.08);border:1px solid rgba(255,106,0,.28);padding:.18rem .55rem}
 
-        .cart-head {
-            display: flex; justify-content: space-between; align-items: center;
-            padding-bottom: 1.2rem; margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(179,77,255,.18);
-        }
-        .cart-head h2 {
-            font-size: 1.1rem; letter-spacing: 3px; text-transform: uppercase;
-            background: linear-gradient(90deg, var(--purple), var(--cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .close-btn {
-            background: none; border: none; color: #fff;
-            font-size: 1.4rem; cursor: pointer; transition: transform .3s;
-        }
-        .close-btn:hover { transform: rotate(90deg); }
+.cd{display:flex;gap:.6rem;margin-bottom:1.3rem}
+.cd-u{background:rgba(0,0,0,.55);border:1px solid rgba(0,212,255,.18);padding:.55rem .75rem;text-align:center;min-width:50px}
+.cd-n{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--cyan);line-height:1;font-variant-numeric:tabular-nums}
+.cd-l{font-size:.48rem;color:rgba(255,255,255,.32);letter-spacing:2px;text-transform:uppercase;margin-top:.2rem}
 
-        .cart-items-wrap { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+/* ── CONTACT ── */
+.contact-wrap{display:grid;grid-template-columns:1fr 1.3fr;gap:4rem;width:100%}
+.c-info h3{font-family:'Orbitron',monospace;font-size:.82rem;letter-spacing:3px;color:var(--cyan);margin-bottom:1.8rem}
+.c-item{display:flex;align-items:flex-start;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--border)}
+.c-ico{font-size:1rem;min-width:20px;margin-top:.15rem}
+.c-lbl{font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:.25rem}
+.c-val{font-size:.88rem;color:var(--text);line-height:1.5}
+.sys-data{margin-top:2rem}
+.sys-line{font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:2px;color:rgba(0,85,255,.3);margin-bottom:.25rem}
 
-        .c-item {
-            display: flex; gap: 1rem; align-items: center;
-            background: rgba(255,255,255,.03);
-            border: 1px solid rgba(179,77,255,.12);
-            border-radius: 12px; padding: .9rem;
-        }
-        .c-item-emoji { font-size: 1.8rem; min-width: 44px; text-align: center; }
-        .c-item-info { flex: 1; }
-        .c-item-name { font-size: .88rem; font-weight: 600; margin-bottom: .25rem; }
-        .c-item-price { color: var(--cyan); font-weight: 700; font-size: .9rem; }
-        .qty-ctrl { display: flex; align-items: center; gap: .4rem; }
-        .qty-btn {
-            background: rgba(255,255,255,.08); border: none; color: #fff;
-            width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
-            font-size: .85rem; line-height: 1; transition: background .2s;
-        }
-        .qty-btn:hover { background: rgba(179,77,255,.4); }
-        .rm-btn { background: none; border: none; color: rgba(255,80,80,.7); cursor: pointer; font-size: 1rem; }
+.c-form{}
+.f-grp{margin-bottom:1.2rem}
+.f-grp label{display:block;font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:.4rem}
+.f-grp input,.f-grp textarea{
+  width:100%;background:transparent;
+  border:none;border-bottom:1px solid var(--border);
+  color:var(--text);font-size:.9rem;padding:.65rem .25rem;
+  outline:none;resize:none;transition:border-color .3s;
+  font-family:'Space Grotesk',system-ui,sans-serif;
+}
+.f-grp input:focus,.f-grp textarea:focus{border-bottom-color:var(--cyan)}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
 
-        .cart-foot { padding-top: 1.4rem; border-top: 1px solid rgba(179,77,255,.18); }
-        .cart-total-row {
-            display: flex; justify-content: space-between;
-            font-size: 1.15rem; font-weight: 700; margin-bottom: 1.3rem;
-        }
-        .cart-total-row span:last-child { color: var(--cyan); }
+/* ── CART ── */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,10,.72);backdrop-filter:blur(5px);z-index:8000;opacity:0;pointer-events:none;transition:opacity .4s}
+.cart-overlay.on{opacity:1;pointer-events:all}
+.cart-panel{
+  position:fixed;right:-440px;top:0;width:420px;height:100vh;
+  background:rgba(0,3,14,.97);border-left:1px solid var(--border);
+  z-index:9000;display:flex;flex-direction:column;
+  transition:right .42s cubic-bezier(.16,1,.3,1);
+}
+.cart-panel.open{right:0}
+.cart-hd{padding:1.6rem 1.8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cart-hd h2{font-family:'Orbitron',monospace;font-size:.82rem;letter-spacing:4px;background:linear-gradient(90deg,var(--electric),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cart-x{background:none;border:1px solid var(--border);color:var(--text);width:30px;height:30px;cursor:none;display:flex;align-items:center;justify-content:center;transition:all .25s}
+.cart-x:hover{border-color:var(--cyan);color:var(--cyan)}
+.cart-bdy{flex:1;overflow-y:auto;padding:1.4rem 1.8rem}
+.cart-empty{text-align:center;padding:3rem 0;font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:3px;color:var(--dim)}
+.ci{display:flex;gap:.9rem;align-items:center;padding:.85rem 0;border-bottom:1px solid var(--border)}
+.ci-img{width:52px;height:52px;background:rgba(0,85,255,.1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.ci-info{flex:1}
+.ci-name{font-size:.82rem;font-weight:600;margin-bottom:.2rem}
+.ci-price{font-family:'Orbitron',monospace;font-size:.78rem;color:var(--cyan)}
+.qty-row{display:flex;align-items:center;gap:.4rem}
+.qty-btn{width:22px;height:22px;background:rgba(0,85,255,.1);border:1px solid var(--border);color:var(--text);cursor:none;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .2s}
+.qty-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.qty-n{font-family:'Orbitron',monospace;font-size:.7rem;min-width:14px;text-align:center}
+.rm-btn{background:none;border:none;color:rgba(255,80,80,.5);cursor:none;font-size:.9rem;transition:color .2s}
+.rm-btn:hover{color:rgba(255,80,80,.9)}
+.cart-ft{padding:1.4rem 1.8rem;border-top:1px solid var(--border)}
+.total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.3rem}
+.total-lbl{font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:3px;color:var(--dim)}
+.total-val{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:700;color:var(--cyan)}
+.checkout{
+  width:100%;padding:.95rem;background:transparent;
+  border:1px solid var(--cyan);color:var(--cyan);
+  font-family:'Orbitron',monospace;font-size:.65rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;cursor:none;
+  overflow:hidden;position:relative;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+  transition:color .32s;
+}
+.checkout::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:translateX(-101%);transition:transform .32s ease;z-index:0}
+.checkout:hover{color:var(--void)}.checkout:hover::before{transform:translateX(0)}
+.checkout span{position:relative;z-index:1}
 
-        .checkout-btn {
-            width: 100%; padding: 1rem; border: none; border-radius: 12px;
-            background: linear-gradient(135deg, var(--purple), var(--cyan));
-            color: #fff; font-size: .95rem; font-weight: 700;
-            letter-spacing: 2px; text-transform: uppercase;
-            cursor: pointer; transition: transform .3s;
-        }
-        .checkout-btn:hover { transform: scale(1.02); }
+/* ── FOOTER ── */
+footer{position:relative;z-index:2;background:rgba(0,2,10,1);border-top:1px solid var(--border);padding:5rem 3rem 2.5rem}
+.ft-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;gap:3.5rem;max-width:1280px;margin:0 auto 3.5rem}
+.ft-brand .logo{display:block;margin-bottom:1.1rem}
+.ft-brand p{font-size:.82rem;color:var(--dim);line-height:1.85;margin-bottom:1.4rem}
+.ft-socials{display:flex;gap:.7rem}
+.ft-soc{width:34px;height:34px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:none;transition:all .25s;font-size:.82rem}
+.ft-soc:hover{border-color:var(--cyan);color:var(--cyan)}
+.ft-col h4{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:1.1rem}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:.65rem}
+.ft-col ul a{font-size:.82rem;color:var(--dim);text-decoration:none;transition:color .25s}
+.ft-col ul a:hover{color:var(--text)}
+.ft-nl p{font-size:.8rem;color:var(--dim);line-height:1.7;margin-bottom:.9rem}
+.nl-form{display:flex;border:1px solid var(--border);overflow:hidden}
+.nl-form input{flex:1;padding:.6rem .9rem;background:rgba(0,20,60,.4);border:none;color:var(--text);font-size:.75rem;outline:none}
+.nl-form button{padding:.6rem 1.1rem;background:var(--electric);border:none;color:#fff;font-family:'Orbitron',monospace;font-size:.55rem;font-weight:700;letter-spacing:2px;cursor:none;transition:background .25s}
+.nl-form button:hover{background:var(--cyan);color:var(--void)}
+.ft-btm{max-width:1280px;margin:0 auto;padding-top:2rem;border-top:1px solid rgba(0,85,255,.08);display:flex;justify-content:space-between;align-items:center}
+.ft-btm p,.ft-btm a{font-size:.72rem;color:rgba(255,255,255,.2);text-decoration:none;transition:color .25s}
+.ft-btm a:hover{color:var(--dim)}
+.ft-legal{display:flex;gap:2rem}
 
-        /* ── OVERLAY ── */
-        #overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,.55);
-            z-index: 8000; opacity: 0; pointer-events: none; transition: opacity .4s;
-        }
-        #overlay.on { opacity: 1; pointer-events: all; }
+/* ── PARTICLES ── */
+.ptcl{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;animation:ptcl .85s ease-out forwards}
+@keyframes ptcl{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
 
-        /* ── FOOTER ── */
-        footer {
-            position: relative; z-index: 2;
-            background: rgba(3,0,21,.97);
-            border-top: 1px solid rgba(179,77,255,.18);
-            padding: 4.5rem 2rem 2rem;
-        }
-        .footer-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr));
-            gap: 3rem; max-width: 1200px; margin: 0 auto 3rem;
-        }
-        .fc h3 {
-            font-size: .82rem; letter-spacing: 3px; text-transform: uppercase;
-            color: var(--cyan); margin-bottom: 1.4rem;
-        }
-        .fc ul { list-style: none; display: flex; flex-direction: column; gap: .75rem; }
-        .fc ul a { color: rgba(255,255,255,.45); text-decoration: none; font-size: .88rem; transition: color .3s; }
-        .fc ul a:hover { color: var(--cyan); }
-        .fc p { color: rgba(255,255,255,.4); font-size: .88rem; line-height: 1.8; }
-
-        .newsletter {
-            display: flex; gap: .5rem; margin-top: 1rem;
-        }
-        .newsletter input {
-            flex: 1; padding: .65rem 1rem;
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(179,77,255,.28);
-            border-radius: 8px; color: #fff; font-size: .82rem; outline: none;
-        }
-        .newsletter button {
-            padding: .65rem 1.1rem;
-            background: linear-gradient(135deg, var(--purple), var(--cyan));
-            border: none; border-radius: 8px; color: #fff;
-            font-size: .78rem; font-weight: 700; cursor: pointer; letter-spacing: 1px;
-        }
-
-        .socials { display: flex; gap: 1rem; margin-top: 1.2rem; }
-        .social {
-            width: 38px; height: 38px; border-radius: 50%;
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(179,77,255,.28);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: .9rem; transition: all .3s;
-        }
-        .social:hover {
-            background: linear-gradient(135deg, var(--purple), var(--cyan));
-            border-color: transparent; transform: translateY(-3px);
-        }
-
-        .footer-bottom {
-            text-align: center; padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,.05);
-            color: rgba(255,255,255,.25); font-size: .8rem;
-            max-width: 1200px; margin: 0 auto;
-        }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .search-wrap input { width: 110px; }
-            .search-wrap input:focus { width: 140px; }
-            .f-row { grid-template-columns: 1fr; }
-            .cart-side { width: 100%; right: -100%; }
-            #vortex-canvas { width: 320px !important; height: 320px !important; }
-        }
-    </style>
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.ft-grid{grid-template-columns:1fr 1fr;gap:2.5rem}.contact-wrap{grid-template-columns:1fr;gap:2rem}}
+@media(max-width:768px){
+  nav{padding:1rem 1.2rem}.nav-links{display:none}
+  .pg-section{padding:7rem 1.2rem 4rem}
+  footer{padding:3rem 1.2rem 1.5rem}.ft-grid{grid-template-columns:1fr}
+  .ft-btm{flex-direction:column;gap:.8rem;text-align:center}
+  .hud-corner{display:none}.f-row{grid-template-columns:1fr}
+  .cart-panel{width:100%;right:-100%}
+  .cta-row{flex-direction:column;align-items:center}
+}
+</style>
 </head>
 <body>
 
-<canvas id="space-canvas"></canvas>
-<div id="overlay" onclick="closeCart()"></div>
+<div id="cur"></div><div id="cur-dot"></div>
+<canvas id="space-cv"></canvas>
+<canvas id="vortex-cv" width="800" height="800"></canvas>
 
-<!-- ══════════ NAV ══════════ -->
-<nav>
-    <div class="logo">✦ Nebula Store</div>
-    <ul class="nav-links">
-        <li><a href="#hero">Accueil</a></li>
-        <li><a href="#products">Produits</a></li>
-        <li><a href="#nouveautes">Nouveautés</a></li>
-        <li><a href="#promotions">Promotions</a></li>
-        <li><a href="#contact">Contact</a></li>
-    </ul>
-    <div class="nav-right">
-        <div class="search-wrap"><input type="text" placeholder="Rechercher..."></div>
-        <button class="icon-btn" onclick="alert('Mon compte 👤')">👤</button>
-        <button class="icon-btn" onclick="openCart()">
-            🛒<span class="badge" id="cart-count">0</span>
-        </button>
-    </div>
-</nav>
-
-<!-- ══════════ CART ══════════ -->
-<div class="cart-side" id="cart-side">
-    <div class="cart-head">
-        <h2>Mon Panier</h2>
-        <button class="close-btn" onclick="closeCart()">✕</button>
-    </div>
-    <div class="cart-items-wrap" id="cart-items">
-        <div style="text-align:center;color:rgba(255,255,255,.28);margin-top:3rem;font-size:.88rem;letter-spacing:2px;">
-            PANIER VIDE<br><br>🛸
-        </div>
-    </div>
-    <div class="cart-foot">
-        <div class="cart-total-row">
-            <span>Total</span>
-            <span id="cart-total">0,00 €</span>
-        </div>
-        <button class="checkout-btn" onclick="alert('Paiement galactique en route 🚀')">Commander →</button>
-    </div>
+<div class="cart-overlay" id="cart-ovl" onclick="closeCart()"></div>
+<div class="cart-panel" id="cart-panel">
+  <div class="cart-hd">
+    <h2>SYSTÈME PANIER</h2>
+    <button class="cart-x" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-bdy" id="cart-bdy">
+    <div class="cart-empty">[ PANIER VIDE ]<br><br>◈</div>
+  </div>
+  <div class="cart-ft">
+    <div class="total-row"><span class="total-lbl">TOTAL</span><span class="total-val" id="cart-total">0,00 €</span></div>
+    <button class="checkout" onclick="alert('Système de paiement en initialisation 🛸')"><span>VALIDER LA COMMANDE →</span></button>
+  </div>
 </div>
 
-<!-- ══════════ HERO ══════════ -->
+<nav>
+  <div class="logo">NEXUS</div>
+  <ul class="nav-links">
+    <li><a href="#hero">Accueil</a></li>
+    <li><a href="#products">Produits</a></li>
+    <li><a href="#nouveautes">Nouveautés</a></li>
+    <li><a href="#promotions">Offres</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="srch-wrap"><input type="text" placeholder="Rechercher..."></div>
+    <button class="nav-btn">⊙</button>
+    <button class="nav-btn" onclick="openCart()" style="position:relative">⊡<span class="badge" id="cart-cnt">0</span></button>
+  </div>
+</nav>
+
 <section id="hero">
-    <canvas id="vortex-canvas" width="700" height="700"></canvas>
-    <div class="hero-content">
-        <h1 class="hero-title">
-            <span class="main">NEBULA STORE</span>
-            <span class="glitch-layer glitch-a">NEBULA STORE</span>
-            <span class="glitch-layer glitch-b">NEBULA STORE</span>
-        </h1>
-        <p class="hero-sub"><span id="typewriter"></span><span class="cursor">|</span></p>
-        <button class="cta" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
-            <div class="cta-shine"></div>
-            <span>✦ Explorer la Galaxie</span>
-        </button>
+  <div class="hud">
+    <div class="hud-corner hud-tl"><div class="hud-label">SYSTÈME</div><div class="hud-val" id="hud-scan">0%</div><div class="hud-line"></div></div>
+    <div class="hud-corner hud-tr"><div class="hud-label">COORD</div><div class="hud-val">NGC-7293-α</div><div class="hud-line"></div></div>
+    <div class="hud-corner hud-bl"><div class="hud-label">MASSE</div><div class="hud-val">4.3M☉</div><div class="hud-line"></div></div>
+    <div class="hud-corner hud-br"><div class="hud-label">RAYON</div><div class="hud-val">12.7 AU</div><div class="hud-line"></div></div>
+  </div>
+  <div class="hero-content">
+    <div class="eyebrow">Commerce Galactique</div>
+    <h1 class="hero-title">
+      <span class="t1">NEXUS</span>
+      <span class="t2">STORE</span>
+    </h1>
+    <p class="hero-sub"><span id="typewriter"></span><span class="type-cur">_</span></p>
+    <div class="cta-row">
+      <button class="btn-pri" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})"><span>Explorer</span></button>
+      <button class="btn-sec" onclick="document.getElementById('promotions').scrollIntoView({behavior:'smooth'})">Offres actives</button>
     </div>
-    <div class="scroll-hint">SCROLL <br>↓</div>
+  </div>
+  <div class="scroll-hint">SCROLL ↓</div>
 </section>
 
-<!-- ══════════ PRODUCTS ══════════ -->
-<section id="products" class="orbit-section">
-    <h2 class="sec-title">Nos Produits</h2>
-    <div class="sec-line"></div>
-    <div class="grid" id="grid-products"></div>
+<section id="products" class="pg-section">
+  <div class="sec-inner">
+    <div class="sec-hd">
+      <div class="sec-num">01</div>
+      <div><div class="sec-label">Catalogue</div><div class="sec-title">Nos Produits</div></div>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="p-grid" id="grid-prod"></div>
+  </div>
 </section>
 
-<!-- ══════════ NOUVEAUTÉS ══════════ -->
-<section id="nouveautes" class="orbit-section">
-    <h2 class="sec-title">✨ Nouveautés</h2>
-    <div class="sec-line"></div>
-    <div class="grid" id="grid-new"></div>
+<section id="nouveautes" class="pg-section">
+  <div class="sec-inner">
+    <div class="sec-hd">
+      <div class="sec-num">02</div>
+      <div><div class="sec-label">Arrivages</div><div class="sec-title">Nouveautés</div></div>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="p-grid" id="grid-new"></div>
+  </div>
 </section>
 
-<!-- ══════════ PROMOTIONS ══════════ -->
-<section id="promotions" class="orbit-section">
-    <h2 class="sec-title">🔥 Promotions</h2>
-    <div class="sec-line"></div>
+<section id="promotions" class="pg-section">
+  <div class="sec-inner">
+    <div class="sec-hd">
+      <div class="sec-num">03</div>
+      <div><div class="sec-label">Offres limitées</div><div class="sec-title">Promotions</div></div>
+      <div class="sec-rule"></div>
+    </div>
     <div class="promo-grid">
-        <div class="promo-card">
-            <div class="promo-badge">FLASH SALE ⚡</div>
-            <div style="font-size:4rem;margin:1rem 0">🌌</div>
-            <h3 style="font-size:1.25rem;margin-bottom:.5rem">Pack Galaxie Pro</h3>
-            <p style="color:rgba(255,255,255,.45);font-size:.88rem;margin-bottom:.8rem">Collection limitée — 3 articles premium</p>
-            <div style="font-size:2rem;font-weight:900;color:var(--cyan)">149,99 €</div>
-            <div style="text-decoration:line-through;color:rgba(255,255,255,.3);margin-bottom:1.2rem">299,99 €</div>
-            <div class="countdown" id="cd1"></div>
-            <button class="btn-cart" onclick="addCart(this,'Pack Galaxie Pro','149.99','🌌')">Saisir l'offre →</button>
-        </div>
-        <div class="promo-card">
-            <div class="promo-badge">−50% AUJOURD'HUI</div>
-            <div style="font-size:4rem;margin:1rem 0">⭐</div>
-            <h3 style="font-size:1.25rem;margin-bottom:.5rem">Étoile Néon Pack</h3>
-            <p style="color:rgba(255,255,255,.45);font-size:.88rem;margin-bottom:.8rem">5 accessoires lumineux édition spéciale</p>
-            <div style="font-size:2rem;font-weight:900;color:var(--cyan)">79,99 €</div>
-            <div style="text-decoration:line-through;color:rgba(255,255,255,.3);margin-bottom:1.2rem">159,99 €</div>
-            <div class="countdown" id="cd2"></div>
-            <button class="btn-cart" onclick="addCart(this,'Étoile Néon Pack','79.99','⭐')">Saisir l'offre →</button>
-        </div>
-        <div class="promo-card">
-            <div class="promo-badge">ÉDITION LIMITÉE</div>
-            <div style="font-size:4rem;margin:1rem 0">🪐</div>
-            <h3 style="font-size:1.25rem;margin-bottom:.5rem">Saturn Collection</h3>
-            <p style="color:rgba(255,255,255,.45);font-size:.88rem;margin-bottom:.8rem">La collection la plus exclusive de l'année</p>
-            <div style="font-size:2rem;font-weight:900;color:var(--cyan)">199,99 €</div>
-            <div style="text-decoration:line-through;color:rgba(255,255,255,.3);margin-bottom:1.2rem">399,99 €</div>
-            <div class="countdown" id="cd3"></div>
-            <button class="btn-cart" onclick="addCart(this,'Saturn Collection','199.99','🪐')">Saisir l'offre →</button>
-        </div>
+      <div class="promo-card">
+        <div class="promo-tag">⚡ Flash Sale</div>
+        <div class="promo-name">Pack Galaxie Pro</div>
+        <div class="promo-desc">Collection limitée — 3 articles signature de notre ligne cosmos haute performance.</div>
+        <div class="price-blk"><span class="price-new">149,99€</span><span class="price-orig">299,99€</span><span class="price-save">−50%</span></div>
+        <div class="cd" id="cd1"></div>
+        <button class="btn-pri" style="width:100%" onclick="addCart(this,'Pack Galaxie Pro','149.99','🌌')"><span>Saisir l'offre</span></button>
+      </div>
+      <div class="promo-card">
+        <div class="promo-tag">◈ Édition Nuit</div>
+        <div class="promo-name">Étoile Néon Pack</div>
+        <div class="promo-desc">5 accessoires lumineux haute précision, édition nuit stellaire exclusive.</div>
+        <div class="price-blk"><span class="price-new">79,99€</span><span class="price-orig">159,99€</span><span class="price-save">−50%</span></div>
+        <div class="cd" id="cd2"></div>
+        <button class="btn-pri" style="width:100%" onclick="addCart(this,'Étoile Néon Pack','79.99','⭐')"><span>Saisir l'offre</span></button>
+      </div>
+      <div class="promo-card">
+        <div class="promo-tag">◎ Édition Limitée</div>
+        <div class="promo-name">Saturn Collection</div>
+        <div class="promo-desc">Notre collection la plus exclusive — 12 pièces disponibles dans la galaxie.</div>
+        <div class="price-blk"><span class="price-new">199,99€</span><span class="price-orig">399,99€</span><span class="price-save">−50%</span></div>
+        <div class="cd" id="cd3"></div>
+        <button class="btn-pri" style="width:100%" onclick="addCart(this,'Saturn Collection','199.99','🪐')"><span>Saisir l'offre</span></button>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- ══════════ CONTACT ══════════ -->
-<section id="contact" class="orbit-section">
-    <h2 class="sec-title">Nous Contacter</h2>
-    <div class="sec-line"></div>
-    <form class="contact-form" onsubmit="return submitForm(event)">
+<section id="contact" class="pg-section">
+  <div class="sec-inner">
+    <div class="sec-hd">
+      <div class="sec-num">04</div>
+      <div><div class="sec-label">Transmission</div><div class="sec-title">Contact</div></div>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="contact-wrap">
+      <div class="c-info">
+        <h3>CANAL DE COMMUNICATION</h3>
+        <div class="c-item"><div class="c-ico">◎</div><div><div class="c-lbl">Localisation</div><div class="c-val">Secteur Alpha, Quadrant 7<br>Station Orbitale NEXUS</div></div></div>
+        <div class="c-item"><div class="c-ico">⊙</div><div><div class="c-lbl">Fréquence</div><div class="c-val">contact@nexus-store.io</div></div></div>
+        <div class="c-item"><div class="c-ico">◈</div><div><div class="c-lbl">Support</div><div class="c-val">07:00 — 23:00 UTC · Réponse &lt; 2h</div></div></div>
+        <div class="sys-data">
+          <div class="sys-line">SYS.STATUS ·· ONLINE ●</div>
+          <div class="sys-line">LATENCY ·· 12ms</div>
+          <div class="sys-line">ENCRYPTION ·· AES-256</div>
+        </div>
+      </div>
+      <form class="c-form" onsubmit="return subForm(event)">
         <div class="f-row">
-            <div class="f-group"><label>Nom</label><input type="text" placeholder="Votre nom" required></div>
-            <div class="f-group"><label>Email</label><input type="email" placeholder="vous@email.com" required></div>
+          <div class="f-grp"><label>Désignation</label><input type="text" placeholder="Votre nom" required></div>
+          <div class="f-grp"><label>Fréquence</label><input type="email" placeholder="vous@email.com" required></div>
         </div>
-        <div class="f-group"><label>Sujet</label><input type="text" placeholder="Sujet de votre message"></div>
-        <div class="f-group"><label>Message</label><textarea rows="5" placeholder="Votre message..."></textarea></div>
-        <button type="submit" class="cta" style="border:none;width:100%;animation:none;justify-content:center">
-            <div class="cta-shine"></div>
-            <span>Envoyer dans l'espace 🚀</span>
-        </button>
-    </form>
+        <div class="f-grp"><label>Sujet</label><input type="text" placeholder="Objet du message"></div>
+        <div class="f-grp"><label>Message</label><textarea rows="5" placeholder="Votre message..."></textarea></div>
+        <button type="submit" class="btn-pri" style="width:100%;padding:1rem"><span>Envoyer la transmission →</span></button>
+      </form>
+    </div>
+  </div>
 </section>
 
-<!-- ══════════ FOOTER ══════════ -->
 <footer>
-    <div class="footer-grid">
-        <div class="fc">
-            <div class="logo" style="margin-bottom:1rem">✦ Nebula Store</div>
-            <p>Le commerce du futur, aujourd'hui.<br>Découvrez notre univers galactique d'articles premium conçus pour les explorateurs du cosmos.</p>
-            <div class="socials">
-                <div class="social">𝕏</div>
-                <div class="social">f</div>
-                <div class="social">in</div>
-                <div class="social">ig</div>
-            </div>
-        </div>
-        <div class="fc">
-            <h3>Boutique</h3>
-            <ul>
-                <li><a href="#">Nouveautés</a></li>
-                <li><a href="#">Meilleures ventes</a></li>
-                <li><a href="#">Promotions</a></li>
-                <li><a href="#">Collections</a></li>
-                <li><a href="#">Marques</a></li>
-            </ul>
-        </div>
-        <div class="fc">
-            <h3>Aide</h3>
-            <ul>
-                <li><a href="#">FAQ</a></li>
-                <li><a href="#">Livraison</a></li>
-                <li><a href="#">Retours & échanges</a></li>
-                <li><a href="#">Support</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </div>
-        <div class="fc">
-            <h3>Newsletter</h3>
-            <p>Recevez nos offres exclusives en avant-première directement dans votre boîte.</p>
-            <div class="newsletter">
-                <input type="email" placeholder="Email...">
-                <button onclick="alert('Merci ! Bienvenue dans la galaxie 🚀')">OK</button>
-            </div>
-        </div>
+  <div class="ft-grid">
+    <div class="ft-brand">
+      <div class="logo" style="margin-bottom:1.1rem">NEXUS</div>
+      <p>Commerce de demain. Découvrez notre sélection premium conçue pour les explorateurs du futur, des confins les plus reculés de la galaxie.</p>
+      <div class="ft-socials"><div class="ft-soc">𝕏</div><div class="ft-soc">◈</div><div class="ft-soc">⊙</div><div class="ft-soc">◎</div></div>
     </div>
-    <div class="footer-bottom">
-        <p>© 2025 NEBULA STORE — Tous droits réservés &nbsp;|&nbsp; Propulsé par énergie cosmique ✦</p>
-    </div>
+    <div class="ft-col"><h4>Boutique</h4><ul><li><a href="#">Nouveautés</a></li><li><a href="#">Best-sellers</a></li><li><a href="#">Promotions</a></li><li><a href="#">Collections</a></li></ul></div>
+    <div class="ft-col"><h4>Assistance</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Livraison</a></li><li><a href="#">Retours</a></li><li><a href="#">Support</a></li></ul></div>
+    <div class="ft-nl"><h4>Transmissions</h4><p>Recevez nos dispatches galactiques — offres exclusives et nouvelles collections en avant-première.</p><div class="nl-form"><input type="email" placeholder="Fréquence email..."><button onclick="alert('Enregistré 🛸')">OK</button></div></div>
+  </div>
+  <div class="ft-btm">
+    <p>© 2025 NEXUS STORE — Tous droits réservés</p>
+    <div class="ft-legal"><a href="#">Confidentialité</a><a href="#">CGV</a><a href="#">Mentions légales</a></div>
+  </div>
 </footer>
 
 <script>
-// ════════════════════════════════════════
-//  DATA
-// ════════════════════════════════════════
-const PRODUCTS = [
-    {n:'Casque Cosmos X',   p:'189,99', o:'249,99', s:5, e:'🎧'},
-    {n:'Montre Orbital',    p:'299,99', o:'399,99', s:4, e:'⌚'},
-    {n:'Veste Nébuleuse',   p:'149,99', o:'199,99', s:5, e:'🧥'},
-    {n:'Lunettes Quasar',   p:'89,99',  o:'119,99', s:4, e:'🕶️'},
-    {n:'Sac Voie Lactée',   p:'129,99', o:'179,99', s:5, e:'👜'},
-    {n:'Tablette Pulsar',   p:'449,99', o:'599,99', s:5, e:'📱'},
-    {n:'Sneakers Aurora',   p:'179,99', o:'229,99', s:4, e:'👟'},
-    {n:'Parfum Andromède',  p:'79,99',  o:'99,99',  s:5, e:'✨'},
+// ══ CURSOR ══
+const CUR=document.getElementById('cur'),CDOT=document.getElementById('cur-dot');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;CDOT.style.cssText=`left:${mx-1.5}px;top:${my-1.5}px`});
+(function ac(){cx+=(mx-cx)*.12;cy+=(my-cy)*.12;CUR.style.cssText=`left:${cx-9}px;top:${cy-9}px`;requestAnimationFrame(ac)})();
+document.querySelectorAll('button,a,input,textarea').forEach(e=>{
+  e.addEventListener('mouseenter',()=>CUR.style.transform='scale(2)');
+  e.addEventListener('mouseleave',()=>CUR.style.transform='scale(1)');
+});
+
+// ══ HUD SCAN ANIMATION ══
+let scanVal=0;
+const hudEl=document.getElementById('hud-scan');
+const hudInt=setInterval(()=>{
+  scanVal+=Math.floor(Math.random()*8+3);
+  if(scanVal>=100){scanVal=100;hudEl.textContent='100%';clearInterval(hudInt);}
+  else hudEl.textContent=scanVal+'%';
+},80);
+
+// ══ PRODUCTS ══
+const PRODS=[
+  {n:'Casque Cosmos X',p:'189,99',o:'249,99',s:5,e:'🎧',c:'Audio',v:'vis-a'},
+  {n:'Montre Orbital',p:'299,99',o:'399,99',s:4,e:'⌚',c:'Horlogerie',v:'vis-b'},
+  {n:'Veste Nébuleuse',p:'149,99',o:'199,99',s:5,e:'🧥',c:'Mode',v:'vis-c'},
+  {n:'Lunettes Quasar',p:'89,99',o:'119,99',s:4,e:'🕶️',c:'Optique',v:'vis-d'},
+  {n:'Sac Voie Lactée',p:'129,99',o:'179,99',s:5,e:'👜',c:'Accessoires',v:'vis-c'},
+  {n:'Tablette Pulsar',p:'449,99',o:'599,99',s:5,e:'📱',c:'Tech',v:'vis-b'},
+  {n:'Sneakers Aurora',p:'179,99',o:'229,99',s:4,e:'👟',c:'Mode',v:'vis-a'},
+  {n:'Parfum Andromède',p:'79,99',o:'99,99',s:5,e:'✨',c:'Beauté',v:'vis-d'},
 ];
-const NEW_PRODUCTS = [
-    {n:'Drone Solaire',     p:'599,99', o:null, s:5, e:'🚁'},
-    {n:'Cristal Stellaire', p:'45,99',  o:null, s:4, e:'💎'},
-    {n:'Robot Compagnon',   p:'399,99', o:null, s:5, e:'🤖'},
-    {n:'Livre Cosmique',    p:'29,99',  o:null, s:4, e:'📖'},
+const NEWS=[
+  {n:'Drone Solaire',p:'599,99',o:null,s:5,e:'🚁',c:'Tech',v:'vis-b'},
+  {n:'Cristal Stellaire',p:'45,99',o:null,s:4,e:'💎',c:'Déco',v:'vis-d'},
+  {n:'Robot Compagnon',p:'399,99',o:null,s:5,e:'🤖',c:'Tech',v:'vis-a'},
+  {n:'Livre Cosmique',p:'29,99',o:null,s:4,e:'📖',c:'Culture',v:'vis-c'},
 ];
-
-function cardHTML(p) {
-    const stars = '★'.repeat(p.s) + '☆'.repeat(5 - p.s);
-    const old   = p.o ? `<span class="p-old">${p.o} €</span>` : '';
-    const raw   = p.p.replace(',','.');
-    return `
-    <div class="p-card">
-        <div class="p-img">${p.e}</div>
-        <div class="p-body">
-            <div class="p-name">${p.n}</div>
-            <div class="p-stars">${stars}</div>
-            <div class="p-price">${p.p} € ${old}</div>
-            <button class="btn-cart" onclick="addCart(this,'${p.n}','${raw}','${p.e}')">
-                + Ajouter au panier
-            </button>
-        </div>
-    </div>`;
+function mkCard(p){
+  const st='★'.repeat(p.s)+'☆'.repeat(5-p.s);
+  const ol=p.o?`<span class="p-old">${p.o}€</span>`:'';
+  const raw=p.p.replace(',','.');
+  return`<div class="p-card"><div class="sl"></div><div class="p-vis ${p.v}"><div class="p-vis-bg"></div><div class="p-ico">${p.e}</div></div><div class="p-body"><div class="p-cat">${p.c}</div><div class="p-name">${p.n}</div><div class="p-stars">${st}</div><div class="p-row"><div><span class="p-price">${p.p}€</span>${ol}</div><button class="btn-add" onclick="addCart(this,'${p.n}','${raw}','${p.e}')">+ AJOUTER</button></div></div></div>`;
 }
-document.getElementById('grid-products').innerHTML = PRODUCTS.map(cardHTML).join('');
-document.getElementById('grid-new').innerHTML      = NEW_PRODUCTS.map(cardHTML).join('');
+document.getElementById('grid-prod').innerHTML=PRODS.map(mkCard).join('');
+document.getElementById('grid-new').innerHTML=NEWS.map(mkCard).join('');
 
-// ════════════════════════════════════════
-//  CART
-// ════════════════════════════════════════
-let cart = [];
+// ══ CART ══
+let cart=[];
+function openCart(){document.getElementById('cart-panel').classList.add('open');document.getElementById('cart-ovl').classList.add('on')}
+function closeCart(){document.getElementById('cart-panel').classList.remove('open');document.getElementById('cart-ovl').classList.remove('on')}
+function renderCart(){
+  const tot=cart.reduce((a,b)=>a+parseFloat(b.p)*b.q,0);
+  const cnt=cart.reduce((a,b)=>a+b.q,0);
+  document.getElementById('cart-cnt').textContent=cnt;
+  document.getElementById('cart-total').textContent=tot.toFixed(2).replace('.',',')+' €';
+  const bdy=document.getElementById('cart-bdy');
+  if(!cart.length){bdy.innerHTML='<div class="cart-empty">[ PANIER VIDE ]<br><br>◈</div>';return;}
+  bdy.innerHTML=cart.map((it,i)=>`<div class="ci"><div class="ci-img">${it.e}</div><div class="ci-info"><div class="ci-name">${it.n}</div><div class="ci-price">${it.p.replace('.',',')} €</div></div><div class="qty-row"><button class="qty-btn" onclick="chg(${i},-1)">−</button><span class="qty-n">${it.q}</span><button class="qty-btn" onclick="chg(${i},1)">+</button></div><button class="rm-btn" onclick="rm(${i})">✕</button></div>`).join('');
+}
+function addCart(btn,n,p,e){
+  const x=cart.find(i=>i.n===n);
+  if(x)x.q++;else cart.push({n,p,e,q:1});
+  renderCart();burst(btn);
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span>✓ AJOUTÉ</span>';btn.style.background='var(--cyan)';btn.style.color='var(--void)';
+  setTimeout(()=>{btn.innerHTML=orig;btn.style.background='';btn.style.color='';},1100);
+}
+function chg(i,d){cart[i].q+=d;if(cart[i].q<=0)cart.splice(i,1);renderCart()}
+function rm(i){cart.splice(i,1);renderCart()}
 
-function openCart()  { document.getElementById('cart-side').classList.add('open'); document.getElementById('overlay').classList.add('on'); }
-function closeCart() { document.getElementById('cart-side').classList.remove('open'); document.getElementById('overlay').classList.remove('on'); }
-
-function renderCart() {
-    const total = cart.reduce((a,b) => a + parseFloat(b.price) * b.qty, 0);
-    const count = cart.reduce((a,b) => a + b.qty, 0);
-    document.getElementById('cart-count').textContent = count;
-    document.getElementById('cart-total').textContent = total.toFixed(2).replace('.',',') + ' €';
-
-    const wrap = document.getElementById('cart-items');
-    if (!cart.length) {
-        wrap.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.28);margin-top:3rem;font-size:.88rem;letter-spacing:2px;">PANIER VIDE<br><br>🛸</div>';
-        return;
-    }
-    wrap.innerHTML = cart.map((item, i) => `
-        <div class="c-item">
-            <div class="c-item-emoji">${item.emoji}</div>
-            <div class="c-item-info">
-                <div class="c-item-name">${item.name}</div>
-                <div class="c-item-price">${item.price.replace('.',',')} €</div>
-            </div>
-            <div class="qty-ctrl">
-                <button class="qty-btn" onclick="chgQty(${i},-1)">−</button>
-                <span style="min-width:18px;text-align:center">${item.qty}</span>
-                <button class="qty-btn" onclick="chgQty(${i},1)">+</button>
-            </div>
-            <button class="rm-btn" onclick="rmItem(${i})">✕</button>
-        </div>
-    `).join('');
+// ══ BURST PARTICLES ══
+const PC=['#0055ff','#00d4ff','#fff','#7700ff','#c8a400'];
+function burst(btn){
+  const r=btn.getBoundingClientRect();
+  const bx=r.left+r.width/2,by=r.top+r.height/2;
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');p.className='ptcl';
+    const a=(Math.PI*2*i)/18,d=50+Math.random()*80,sz=3+Math.random()*5;
+    p.style.cssText=`left:${bx}px;top:${by}px;width:${sz}px;height:${sz}px;background:${PC[i%PC.length]};box-shadow:0 0 5px currentColor;--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),900);
+  }
 }
 
-function addCart(btn, name, price, emoji) {
-    const ex = cart.find(i => i.name === name);
-    if (ex) ex.qty++; else cart.push({name, price, emoji, qty:1});
-    renderCart();
-    spawnParticles(btn);
-    const orig = btn.textContent;
-    btn.textContent = '✓ Ajouté !';
-    btn.style.background = 'linear-gradient(135deg,#00f5ff,#b34dff)';
-    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1200);
+// ══ TYPEWRITER ══
+const PH=['L\'avant-garde du commerce galactique','Technologie et design du futur','Explorez. Choisissez. Possédez.','La boutique hors du temps ◈'];
+let pi=0,ci=0,dl=false;
+function tw(){
+  const el=document.getElementById('typewriter'),c=PH[pi];
+  if(!dl){el.textContent=c.slice(0,++ci);if(ci===c.length){dl=true;setTimeout(tw,2600);return;}}
+  else{el.textContent=c.slice(0,--ci);if(ci===0){dl=false;pi=(pi+1)%PH.length;}}
+  setTimeout(tw,dl?28:58);
+}tw();
+
+// ══ SCROLL REVEAL ══
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in')}),{threshold:.1});
+document.querySelectorAll('.sec-inner').forEach(el=>io.observe(el));
+
+// ══ COUNTDOWN ══
+function cd(end,id){
+  function t(){
+    const d=end-Date.now();
+    if(d<=0){document.getElementById(id).innerHTML='<span style="font-family:Orbitron;font-size:.55rem;color:#ff4d00;letter-spacing:2px">EXPIRÉ</span>';return;}
+    const h=String(Math.floor(d/3600000)).padStart(2,'0');
+    const m=String(Math.floor((d%3600000)/60000)).padStart(2,'0');
+    const s=String(Math.floor((d%60000)/1000)).padStart(2,'0');
+    document.getElementById(id).innerHTML=`<div class="cd-u"><div class="cd-n">${h}</div><div class="cd-l">H</div></div><div class="cd-u"><div class="cd-n">${m}</div><div class="cd-l">M</div></div><div class="cd-u"><div class="cd-n">${s}</div><div class="cd-l">S</div></div>`;
+    setTimeout(t,1000);
+  }t();
+}
+cd(Date.now()+3*3600000+42*60000+17000,'cd1');
+cd(Date.now()+11*3600000+15*60000,'cd2');
+cd(Date.now()+23*3600000+59*60000+59000,'cd3');
+
+// ══ CONTACT FORM ══
+function subForm(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('button[type=submit]');
+  btn.innerHTML='<span>TRANSMISSION ENVOYÉE ✓</span>';
+  btn.style.background='rgba(0,212,255,.12)';btn.style.borderColor='var(--cyan)';
+  setTimeout(()=>{btn.innerHTML='<span>Envoyer la transmission →</span>';btn.style.background='';btn.style.borderColor='';e.target.reset();},3200);
+  return false;
 }
 
-function chgQty(i, d) { cart[i].qty += d; if (cart[i].qty <= 0) cart.splice(i,1); renderCart(); }
-function rmItem(i)     { cart.splice(i,1); renderCart(); }
+// ══ SPACE BACKGROUND ══
+const SC=document.getElementById('space-cv'),SCX=SC.getContext('2d');
+let SY=0,MX=.5,MY=.5;
+window.addEventListener('scroll',()=>SY=window.scrollY);
+window.addEventListener('mousemove',e=>{MX=e.clientX/window.innerWidth;MY=e.clientY/window.innerHeight});
+function resizeSC(){SC.width=window.innerWidth;SC.height=window.innerHeight}
+resizeSC();window.addEventListener('resize',resizeSC);
 
-// ════════════════════════════════════════
-//  PARTICLES
-// ════════════════════════════════════════
-const COLORS = ['#b34dff','#00f5ff','#fff','#ffd700','#ff6b6b','#00ff88'];
-function spawnParticles(btn) {
-    const r  = btn.getBoundingClientRect();
-    const cx = r.left + r.width/2, cy = r.top + r.height/2;
-    for (let i = 0; i < 20; i++) {
-        const p = document.createElement('div');
-        p.className = 'ptcl';
-        const angle = (Math.PI*2*i)/20;
-        const dist  = 55 + Math.random()*85;
-        const size  = 4 + Math.random()*6;
-        p.style.cssText = `
-            left:${cx}px;top:${cy}px;
-            width:${size}px;height:${size}px;
-            background:${COLORS[i%COLORS.length]};
-            box-shadow:0 0 6px ${COLORS[i%COLORS.length]};
-            --tx:${Math.cos(angle)*dist}px;
-            --ty:${Math.sin(angle)*dist}px;
-        `;
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 900);
-    }
-}
-
-// ════════════════════════════════════════
-//  TYPEWRITER
-// ════════════════════════════════════════
-const PHRASES = [
-    "L'univers dans votre panier ✦",
-    "Commerce galactique de luxe",
-    "Explorez. Choisissez. Possédez.",
-    "La boutique du cosmos",
-    "Voyagez à la vitesse de la lumière 🚀"
-];
-let pIdx=0, cIdx=0, del=false;
-function tw() {
-    const el  = document.getElementById('typewriter');
-    const cur = PHRASES[pIdx];
-    if (!del) {
-        el.textContent = cur.slice(0,++cIdx);
-        if (cIdx===cur.length) { del=true; setTimeout(tw,2200); return; }
-    } else {
-        el.textContent = cur.slice(0,--cIdx);
-        if (cIdx===0) { del=false; pIdx=(pIdx+1)%PHRASES.length; }
-    }
-    setTimeout(tw, del ? 35 : 65);
-}
-tw();
-
-// ════════════════════════════════════════
-//  SCROLL ORBITAL REVEAL
-// ════════════════════════════════════════
-const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
-}, { threshold: 0.12 });
-document.querySelectorAll('.orbit-section').forEach(s => io.observe(s));
-
-// ════════════════════════════════════════
-//  COUNTDOWN
-// ════════════════════════════════════════
-function countdown(endMs, id) {
-    function tick() {
-        const d = endMs - Date.now();
-        if (d <= 0) { document.getElementById(id).innerHTML = '<span style="color:#ff4d4d;letter-spacing:2px;font-size:.8rem">EXPIRÉ</span>'; return; }
-        const h = String(Math.floor(d/3600000)).padStart(2,'0');
-        const m = String(Math.floor((d%3600000)/60000)).padStart(2,'0');
-        const s = String(Math.floor((d%60000)/1000)).padStart(2,'0');
-        document.getElementById(id).innerHTML = `
-            <div class="cd-unit"><div class="cd-num">${h}</div><div class="cd-lbl">Heures</div></div>
-            <div class="cd-unit"><div class="cd-num">${m}</div><div class="cd-lbl">Min</div></div>
-            <div class="cd-unit"><div class="cd-num">${s}</div><div class="cd-lbl">Sec</div></div>`;
-        setTimeout(tick, 1000);
-    }
-    tick();
-}
-countdown(Date.now() + 3*3600000 + 42*60000 + 17000, 'cd1');
-countdown(Date.now() + 11*3600000 + 15*60000 + 55000, 'cd2');
-countdown(Date.now() + 23*3600000 + 59*60000 + 59000, 'cd3');
-
-// ════════════════════════════════════════
-//  CONTACT FORM
-// ════════════════════════════════════════
-function submitForm(e) {
-    e.preventDefault();
-    const btn = e.target.querySelector('button[type=submit]');
-    btn.innerHTML = '<div class="cta-shine"></div><span>✓ Message reçu — à bientôt ! 🛸</span>';
-    setTimeout(() => {
-        btn.innerHTML = '<div class="cta-shine"></div><span>Envoyer dans l\'espace 🚀</span>';
-        e.target.reset();
-    }, 3000);
-    return false;
-}
-
-// ════════════════════════════════════════
-//  SPACE BACKGROUND
-// ════════════════════════════════════════
-const SC  = document.getElementById('space-canvas');
-const SCX = SC.getContext('2d');
-let scrollY = 0;
-window.addEventListener('scroll', () => scrollY = window.scrollY);
-
-function resizeSC() { SC.width = window.innerWidth; SC.height = window.innerHeight; }
-resizeSC(); window.addEventListener('resize', resizeSC);
-
-// Stars
-const STARS = Array.from({length:350}, () => ({
-    x: Math.random()*window.innerWidth,
-    y: Math.random()*window.innerHeight,
-    r: Math.random()*1.6 + .25,
-    tw: Math.random()*Math.PI*2,
-    sp: Math.random()*.025 + .006
+const STARS=Array.from({length:400},()=>({
+  x:Math.random()*2000,y:Math.random()*2000,
+  r:Math.random()*1.6+.2,tw:Math.random()*Math.PI*2,sp:Math.random()*.022+.005
 }));
-
-// Shooting stars
-const SHOOTS = Array.from({length:4}, () => resetShoot({}));
-function resetShoot(s) {
-    s.x  = Math.random()*window.innerWidth;
-    s.y  = Math.random()*(window.innerHeight*.5);
-    s.vx = 4 + Math.random()*6;
-    s.vy = 1 + Math.random()*3;
-    s.len= 80 + Math.random()*120;
-    s.a  = 0;
-    s.life = 0; s.maxLife = 60 + Math.random()*40;
-    return s;
+const SHOOTS=Array.from({length:5},()=>mkS({}));
+function mkS(s){
+  s.x=Math.random()*window.innerWidth;s.y=Math.random()*(window.innerHeight*.35);
+  s.vx=5+Math.random()*9;s.vy=.8+Math.random()*2.5;
+  s.len=90+Math.random()*130;s.life=0;s.max=55+Math.random()*45;
+  return s;
 }
-
-const NEBULA_DATA = [
-    {rx:.15,ry:.3,rad:420,c:'rgba(140,50,255,.055)'},
-    {rx:.85,ry:.65,rad:380,c:'rgba(0,220,255,.045)'},
-    {rx:.5, ry:.95,rad:300,c:'rgba(0,80,255,.035)'},
+const NEB=[
+  {rx:.08,ry:.2,r:550,c:'rgba(0,25,110,.09)'},
+  {rx:.92,ry:.72,r:480,c:'rgba(80,0,140,.07)'},
+  {rx:.5,ry:1,r:400,c:'rgba(0,50,160,.05)'},
+  {rx:.25,ry:.55,r:380,c:'rgba(0,35,100,.05)'},
 ];
+function drawSpace(){
+  SCX.clearRect(0,0,SC.width,SC.height);
+  NEB.forEach(n=>{
+    const px=n.rx*SC.width+(MX-.5)*28;
+    const py=n.ry*SC.height+(MY-.5)*18-SY*.018;
+    const g=SCX.createRadialGradient(px,py,0,px,py,n.r);
+    g.addColorStop(0,n.c);g.addColorStop(1,'transparent');
+    SCX.fillStyle=g;SCX.fillRect(0,0,SC.width,SC.height);
+  });
+  STARS.forEach(s=>{
+    s.tw+=s.sp;
+    const a=.2+.8*(.5+.5*Math.sin(s.tw));
+    const px=((s.x+(MX-.5)*s.r*20)%SC.width+SC.width)%SC.width;
+    const py=((s.y-SY*(0.025+s.r*.05))%SC.height+SC.height)%SC.height;
+    if(s.r>1.1){
+      const g=SCX.createRadialGradient(px,py,0,px,py,s.r*5);
+      g.addColorStop(0,`rgba(140,190,255,${a*.2})`);g.addColorStop(1,'transparent');
+      SCX.fillStyle=g;SCX.beginPath();SCX.arc(px,py,s.r*5,0,Math.PI*2);SCX.fill();
+    }
+    SCX.beginPath();SCX.arc(px,py,s.r,0,Math.PI*2);
+    SCX.fillStyle=`rgba(215,232,255,${a})`;SCX.fill();
+  });
+  SHOOTS.forEach(s=>{
+    s.life++;if(s.life>s.max)mkS(s);
+    s.x+=s.vx;s.y+=s.vy;
+    const prog=s.life/s.max,al=Math.sin(prog*Math.PI)*.88;
+    const ang=Math.atan2(s.vy,s.vx);
+    SCX.save();SCX.translate(s.x,s.y);SCX.rotate(ang);
+    const g=SCX.createLinearGradient(-s.len,0,0,0);
+    g.addColorStop(0,'transparent');g.addColorStop(1,`rgba(180,220,255,${al})`);
+    SCX.strokeStyle=g;SCX.lineWidth=1.4;SCX.beginPath();SCX.moveTo(-s.len,0);SCX.lineTo(0,0);SCX.stroke();
+    SCX.restore();
+  });
+  requestAnimationFrame(drawSpace);
+}requestAnimationFrame(drawSpace);
 
-function drawSpace(t) {
-    SCX.clearRect(0,0,SC.width,SC.height);
+// ══ BLACK HOLE ══
+const VC=document.getElementById('vortex-cv'),VCX=VC.getContext('2d');
+const VW=800,VH=800,VCX2=400,VCY2=400;
 
-    // Nebulas
-    NEBULA_DATA.forEach(n => {
-        const g = SCX.createRadialGradient(n.rx*SC.width,n.ry*SC.height,0,n.rx*SC.width,n.ry*SC.height,n.rad);
-        g.addColorStop(0, n.c); g.addColorStop(1,'transparent');
-        SCX.fillStyle = g; SCX.fillRect(0,0,SC.width,SC.height);
-    });
-
-    // Stars
-    STARS.forEach(s => {
-        s.tw += s.sp;
-        const a  = .3 + .7*(.5 + .5*Math.sin(s.tw));
-        const py = ((s.y - scrollY*(0.04 + s.r*.08)) % SC.height + SC.height) % SC.height;
-        if (s.r > 1.1) {
-            const g = SCX.createRadialGradient(s.x,py,0,s.x,py,s.r*4);
-            g.addColorStop(0,`rgba(180,210,255,${a*.3})`); g.addColorStop(1,'transparent');
-            SCX.fillStyle=g; SCX.beginPath(); SCX.arc(s.x,py,s.r*4,0,Math.PI*2); SCX.fill();
-        }
-        SCX.beginPath(); SCX.arc(s.x,py,s.r,0,Math.PI*2);
-        SCX.fillStyle=`rgba(225,235,255,${a})`; SCX.fill();
-    });
-
-    // Shooting stars
-    SHOOTS.forEach(s => {
-        s.life++;
-        if (s.life > s.maxLife) resetShoot(s);
-        s.x += s.vx; s.y += s.vy;
-        const prog = s.life / s.maxLife;
-        const alpha = Math.sin(prog * Math.PI) * .85;
-        const angle = Math.atan2(s.vy,s.vx);
-        SCX.save();
-        SCX.translate(s.x,s.y); SCX.rotate(angle);
-        const g = SCX.createLinearGradient(-s.len,0,0,0);
-        g.addColorStop(0,'transparent'); g.addColorStop(1,`rgba(200,230,255,${alpha})`);
-        SCX.strokeStyle=g; SCX.lineWidth=1.5;
-        SCX.beginPath(); SCX.moveTo(-s.len,0); SCX.lineTo(0,0); SCX.stroke();
-        SCX.restore();
-    });
-
-    requestAnimationFrame(drawSpace);
-}
-requestAnimationFrame(drawSpace);
-
-// ════════════════════════════════════════
-//  VORTEX
-// ════════════════════════════════════════
-const VC  = document.getElementById('vortex-canvas');
-const VCX = VC.getContext('2d');
-const VW=700, VH=700, CX=350, CY=350;
-let vAngle=0;
-
-// Vortex particles
-const VP = Array.from({length:180}, () => ({
-    angle: Math.random()*Math.PI*2,
-    r:     20 + Math.random()*240,
-    speed: (.005 + Math.random()*.02) * (Math.random()<.5?1:-1),
-    size:  1 + Math.random()*2.5,
-    color: Math.random()<.5 ? [0,245,255] : [179,77,255],
-    alpha: .3 + Math.random()*.7
+// Orbit particles
+const OP=Array.from({length:260},()=>({
+  a:Math.random()*Math.PI*2,
+  r:65+Math.random()*285,
+  sp:(.003+Math.random()*.018)*(Math.random()<.5?1:-1),
+  sz:.7+Math.random()*2.2,
+  col:Math.random()<.45?[0,212,255]:Math.random()<.6?[119,0,255]:[0,85,255],
+  al:.15+Math.random()*.85
 }));
+// Dust (inner fast)
+const DUST=Array.from({length:90},()=>({
+  a:Math.random()*Math.PI*2,
+  r:18+Math.random()*70,
+  sp:(.025+Math.random()*.07)*(Math.random()<.5?1:-1),
+  sz:.4+Math.random()*1,al:.25+Math.random()*.75
+}));
+// Section orbit nodes
+const NODES=['PRODUITS','NOUVEAUTÉS','PROMOTIONS','CONTACT'];
 
-function drawVortex(t) {
-    VCX.clearRect(0,0,VW,VH);
-    vAngle += .007;
+function drawBH(ts){
+  VCX.clearRect(0,0,VW,VH);
+  const T=ts*.001;
+  const tilt=.28;
+  const dRot=T*.35;
 
-    // Outer nebula glow
-    const og = VCX.createRadialGradient(CX,CY,0,CX,CY,300);
-    og.addColorStop(0,'rgba(179,77,255,.2)');
-    og.addColorStop(.45,'rgba(0,100,255,.08)');
-    og.addColorStop(1,'transparent');
-    VCX.fillStyle=og; VCX.fillRect(0,0,VW,VH);
+  // Outer glow
+  const og=VCX.createRadialGradient(VCX2,VCY2,0,VCX2,VCY2,340);
+  og.addColorStop(0,'rgba(50,0,100,.22)');og.addColorStop(.35,'rgba(0,30,120,.1)');og.addColorStop(1,'transparent');
+  VCX.fillStyle=og;VCX.fillRect(0,0,VW,VH);
 
-    // Rings
-    for (let ri=1;ri<=7;ri++) {
-        const rr = ri*36;
-        const ra = .03 + .06*Math.abs(Math.sin(t/900+ri*.5));
-        VCX.beginPath(); VCX.arc(CX,CY,rr,0,Math.PI*2);
-        VCX.strokeStyle=`rgba(179,77,255,${ra})`; VCX.lineWidth=1; VCX.stroke();
+  // Accretion disk — outer cool
+  for(let r=290;r>115;r-=2.8){
+    const ht=(290-r)/175;
+    const R=Math.floor(ht*55),G=Math.floor(ht*25),B=Math.floor(175-ht*75);
+    const al=.006+ht*.022;
+    const dA=dRot*(1+ht*2.2);
+    VCX.save();VCX.translate(VCX2,VCY2);VCX.rotate(dA);VCX.scale(1,tilt);
+    VCX.beginPath();VCX.arc(0,0,r,0,Math.PI*2);
+    VCX.strokeStyle=`rgba(${R},${G},${B},${al})`;VCX.lineWidth=3.5;VCX.stroke();
+    VCX.restore();
+  }
+  // Accretion disk — inner hot
+  for(let r=115;r>65;r-=1.8){
+    const ht=(115-r)/50;
+    const R=Math.floor(170+ht*80),G=Math.floor(70+ht*130),B=Math.floor(15+ht*50);
+    const al=.012+ht*.07;
+    VCX.save();VCX.translate(VCX2,VCY2);VCX.rotate(dRot*3.5);VCX.scale(1,tilt);
+    VCX.beginPath();VCX.arc(0,0,r,0,Math.PI*2);
+    VCX.strokeStyle=`rgba(${R},${G},${B},${al})`;VCX.lineWidth=2.2;VCX.stroke();
+    VCX.restore();
+  }
+
+  // Orbit particles
+  OP.forEach(p=>{
+    p.a+=p.sp;
+    const px2=VCX2+Math.cos(p.a)*p.r;
+    const py2=VCY2+Math.sin(p.a)*p.r*tilt;
+    const fade=Math.max(0,1-(p.r-60)/265);
+    VCX.beginPath();VCX.arc(px2,py2,p.sz,0,Math.PI*2);
+    VCX.fillStyle=`rgba(${p.col.join(',')},${p.al*fade*.55})`;
+    VCX.shadowBlur=3;VCX.shadowColor=`rgb(${p.col.join(',')})`;
+    VCX.fill();VCX.shadowBlur=0;
+  });
+
+  // Dust
+  DUST.forEach(d=>{
+    d.a+=d.sp;
+    const px3=VCX2+Math.cos(d.a)*d.r;
+    const py3=VCY2+Math.sin(d.a)*d.r*tilt*1.5;
+    VCX.beginPath();VCX.arc(px3,py3,.7,0,Math.PI*2);
+    VCX.fillStyle=`rgba(220,150,50,${d.al*.45})`;VCX.fill();
+  });
+
+  // Relativistic jets (top + bottom)
+  [-1,1].forEach(s=>{
+    const jLen=170+Math.sin(T*.8)*18;
+    const jg=VCX.createLinearGradient(VCX2,VCY2,VCX2,VCY2+s*jLen);
+    jg.addColorStop(0,'rgba(80,170,255,.65)');jg.addColorStop(.5,'rgba(40,100,255,.25)');jg.addColorStop(1,'transparent');
+    VCX.beginPath();VCX.moveTo(VCX2-5,VCY2);VCX.lineTo(VCX2,VCY2+s*jLen);VCX.lineTo(VCX2+5,VCY2);VCX.closePath();
+    VCX.fillStyle=jg;VCX.fill();
+  });
+
+  // Photon ring
+  const ph=VCX.createRadialGradient(VCX2,VCY2,60,VCX2,VCY2,78);
+  ph.addColorStop(0,'rgba(255,200,70,.72)');ph.addColorStop(.55,'rgba(200,90,0,.3)');ph.addColorStop(1,'transparent');
+  VCX.fillStyle=ph;VCX.beginPath();VCX.arc(VCX2,VCY2,78,0,Math.PI*2);VCX.fill();
+
+  // Event horizon
+  VCX.beginPath();VCX.arc(VCX2,VCY2,60,0,Math.PI*2);
+  VCX.fillStyle='#000306';VCX.fill();
+
+  // Lensing rings
+  for(let i=0;i<4;i++){
+    VCX.beginPath();VCX.arc(VCX2,VCY2,62+i*2,0,Math.PI*2);
+    VCX.strokeStyle=`rgba(220,175,70,${.07-i*.015})`;VCX.lineWidth=.7;VCX.stroke();
+  }
+
+  // Galaxy spiral arms
+  for(let arm=0;arm<3;arm++){
+    const aOff=(Math.PI*2/3)*arm+T*.04;
+    VCX.beginPath();
+    for(let r=75;r<300;r+=1){
+      const ang=aOff+r*.028;
+      const ax=VCX2+Math.cos(ang)*r,ay=VCY2+Math.sin(ang)*r*tilt*1.1;
+      r<76?VCX.moveTo(ax,ay):VCX.lineTo(ax,ay);
     }
+    const ag=VCX.createLinearGradient(VCX2-200,VCY2,VCX2+200,VCY2);
+    ag.addColorStop(0,'rgba(0,85,255,.4)');ag.addColorStop(.5,'rgba(80,0,200,.2)');ag.addColorStop(1,'rgba(0,50,200,.04)');
+    VCX.strokeStyle=ag;VCX.lineWidth=.9;
+    VCX.shadowBlur=6;VCX.shadowColor='#0050ff';VCX.stroke();VCX.shadowBlur=0;
+  }
 
-    // Spiral arms (4)
-    for (let arm=0;arm<4;arm++) {
-        const aOff = (Math.PI*2/4)*arm + vAngle;
-        VCX.beginPath();
-        for (let r=4;r<285;r+=.8) {
-            const a = aOff + r*.042;
-            const x = CX + Math.cos(a)*r, y = CY + Math.sin(a)*r;
-            r<5 ? VCX.moveTo(x,y) : VCX.lineTo(x,y);
-        }
-        const ag = VCX.createLinearGradient(CX-250,CY,CX+250,CY);
-        ag.addColorStop(0,`rgba(0,245,255,.75)`);
-        ag.addColorStop(.5,`rgba(179,77,255,.5)`);
-        ag.addColorStop(1,`rgba(0,80,255,.15)`);
-        VCX.strokeStyle=ag;
-        VCX.lineWidth = 1.5 - arm*.25;
-        VCX.shadowBlur=18; VCX.shadowColor = arm%2?'#b34dff':'#00f5ff';
-        VCX.stroke(); VCX.shadowBlur=0;
-    }
+  // Section orbit nodes — rotate with scroll
+  const scrollPct=SY/Math.max(1,document.body.scrollHeight-window.innerHeight);
+  const nodeR=330;
+  NODES.forEach((label,i)=>{
+    const baseA=(Math.PI*2/NODES.length)*i;
+    const rotA=baseA+scrollPct*Math.PI*2;
+    const nx=VCX2+Math.cos(rotA)*nodeR;
+    const ny=VCY2+Math.sin(rotA)*nodeR*tilt*1.8;
+    const isActive=Math.abs((i/(NODES.length)-scrollPct)%1)<.25||Math.abs((i/(NODES.length)-scrollPct+1)%1)<.25;
+    const dotAl=isActive?.9:.3;
+    const dotR=isActive?5:3;
+    // dot
+    VCX.beginPath();VCX.arc(nx,ny,dotR,0,Math.PI*2);
+    VCX.fillStyle=`rgba(0,212,255,${dotAl})`;
+    if(isActive){VCX.shadowBlur=12;VCX.shadowColor='#00d4ff';}
+    VCX.fill();VCX.shadowBlur=0;
+    // line to center
+    VCX.beginPath();VCX.moveTo(VCX2,VCY2);VCX.lineTo(nx,ny);
+    VCX.strokeStyle=`rgba(0,85,255,${isActive?.12:.04})`;VCX.lineWidth=.5;VCX.stroke();
+    // label
+    VCX.font=`${isActive?600:400} .55rem/1 'Orbitron',monospace`;
+    VCX.fillStyle=`rgba(0,212,255,${dotAl*.8})`;
+    VCX.textAlign='center';VCX.textBaseline='middle';
+    VCX.fillText(label,nx,ny-(dotR+10));
+  });
 
-    // Warp lines
-    for (let i=0;i<50;i++) {
-        const wa = (Math.PI*2/50)*i + vAngle*.25;
-        const wr1 = 15 + (i%7)*8;
-        const wr2 = wr1 + 28 + Math.sin(t/400+i)*.18;
-        const wa_ = .06 + .15*Math.abs(Math.sin(t/280+i*.8));
-        VCX.beginPath();
-        VCX.moveTo(CX+Math.cos(wa)*wr1, CY+Math.sin(wa)*wr1);
-        VCX.lineTo(CX+Math.cos(wa)*wr2, CY+Math.sin(wa)*wr2);
-        VCX.strokeStyle=`rgba(0,245,255,${wa_})`; VCX.lineWidth=.8; VCX.stroke();
-    }
+  // Fade vortex opacity based on scroll
+  VC.style.opacity=Math.max(.18,1-scrollPct*1.5);
 
-    // Orbiting particles
-    VP.forEach(p => {
-        p.angle += p.speed;
-        const spiral = p.r * (1 - .00018*((vAngle*100)%1000));
-        const realR  = ((spiral % 260) + 260) % 260 + 15;
-        const px = CX + Math.cos(p.angle)*realR;
-        const py = CY + Math.sin(p.angle)*realR;
-        const fade = 1 - realR/260;
-        VCX.beginPath(); VCX.arc(px,py,p.size*.6,0,Math.PI*2);
-        VCX.fillStyle=`rgba(${p.color.join(',')},${p.alpha*fade})`;
-        VCX.shadowBlur=8; VCX.shadowColor=`rgb(${p.color.join(',')})`;
-        VCX.fill(); VCX.shadowBlur=0;
-    });
-
-    // Core glow
-    const cg = VCX.createRadialGradient(CX,CY,0,CX,CY,55);
-    cg.addColorStop(0,'rgba(255,255,255,.95)');
-    cg.addColorStop(.25,'rgba(179,77,255,.9)');
-    cg.addColorStop(.6,'rgba(0,245,255,.4)');
-    cg.addColorStop(1,'transparent');
-    VCX.fillStyle=cg; VCX.beginPath(); VCX.arc(CX,CY,55,0,Math.PI*2); VCX.fill();
-
-    // Bright core
-    const ic = VCX.createRadialGradient(CX,CY,0,CX,CY,14);
-    ic.addColorStop(0,'rgba(255,255,255,1)');
-    ic.addColorStop(.6,'rgba(200,240,255,.8)');
-    ic.addColorStop(1,'rgba(0,245,255,0)');
-    VCX.fillStyle=ic; VCX.beginPath(); VCX.arc(CX,CY,14,0,Math.PI*2); VCX.fill();
-
-    // Lens flares
-    for (let f=0;f<8;f++) {
-        const fa = vAngle*2.5 + (Math.PI*2/8)*f;
-        const fr = 10 + f*5;
-        VCX.beginPath(); VCX.arc(CX+Math.cos(fa)*fr, CY+Math.sin(fa)*fr, Math.max(.5,2.5-f*.28), 0, Math.PI*2);
-        VCX.fillStyle=`rgba(255,255,255,${.75-f*.08})`; VCX.fill();
-    }
-
-    requestAnimationFrame(drawVortex);
-}
-requestAnimationFrame(drawVortex);
+  requestAnimationFrame(drawBH);
+}requestAnimationFrame(drawBH);
 </script>
 </body>
 </html>
