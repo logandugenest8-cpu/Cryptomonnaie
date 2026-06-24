@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEBULA STORE — Commerce Galactique</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --purple: #b34dff;
+            --cyan: #00f5ff;
+            --blue: #0066ff;
+            --space: #030015;
+            --card: rgba(10,5,40,0.85);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--space);
+            color: #fff;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ── SPACE CANVAS ── */
+        #space-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed; top: 0; width: 100%;
+            z-index: 1000; padding: 1rem 2.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(3,0,21,0.65);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(179,77,255,0.25);
+            transition: background 0.3s;
+        }
+
+        .logo {
+            font-size: 1.4rem; font-weight: 900;
+            letter-spacing: 4px; text-transform: uppercase;
+            background: linear-gradient(90deg, var(--purple), var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            user-select: none;
+        }
+
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links a {
+            color: rgba(255,255,255,0.7); text-decoration: none;
+            font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .nav-links a:hover { color: var(--cyan); text-shadow: 0 0 12px var(--cyan); }
+
+        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+
+        .search-wrap { position: relative; }
+        .search-wrap input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(179,77,255,0.25);
+            border-radius: 20px; padding: 0.5rem 1rem 0.5rem 2.4rem;
+            color: #fff; font-size: 0.82rem; width: 180px; outline: none;
+            transition: all 0.3s;
+        }
+        .search-wrap input:focus {
+            border-color: var(--cyan); width: 220px;
+            box-shadow: 0 0 18px rgba(0,245,255,0.18);
+        }
+        .search-wrap::before {
+            content: '🔍'; position: absolute;
+            left: 0.7rem; top: 50%; transform: translateY(-50%);
+            font-size: 0.8rem; pointer-events: none;
+        }
+
+        .icon-btn {
+            background: none; border: none; cursor: pointer;
+            font-size: 1.25rem; position: relative; transition: transform 0.25s;
+            color: white;
+        }
+        .icon-btn:hover { transform: scale(1.2); }
+
+        .badge {
+            position: absolute; top: -7px; right: -7px;
+            background: var(--purple); color: #fff;
+            border-radius: 50%; width: 17px; height: 17px;
+            font-size: 0.6rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            animation: badge-pulse 2s infinite;
+        }
+        @keyframes badge-pulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(179,77,255,.7); }
+            50%      { box-shadow: 0 0 0 6px rgba(179,77,255,0); }
+        }
+
+        /* ── HERO ── */
+        #hero {
+            position: relative; height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 1; overflow: hidden;
+        }
+
+        #vortex-canvas {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            z-index: 1; pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative; z-index: 2;
+            text-align: center; padding: 0 1rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.8rem,8vw,7rem);
+            font-weight: 900; letter-spacing: 8px;
+            text-transform: uppercase;
+            position: relative; line-height: 1.05;
+        }
+        .hero-title .main {
+            background: linear-gradient(135deg,#fff 20%,var(--cyan) 55%,var(--purple) 85%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-title .glitch-layer {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg,#fff 20%,var(--cyan) 55%,var(--purple) 85%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            pointer-events: none;
+        }
+        .glitch-a { animation: ga 4s infinite; clip-path: polygon(0 25%,100% 25%,100% 45%,0 45%); }
+        .glitch-b { animation: gb 4s infinite; clip-path: polygon(0 65%,100% 65%,100% 80%,0 80%); }
+
+        @keyframes ga {
+            0%,88%,100% { transform: translateX(0); opacity: 0; }
+            90% { transform: translateX(-5px); opacity: .85; }
+            93% { transform: translateX(5px); opacity: .85; }
+            96% { transform: translateX(-2px); opacity: .85; }
+            98% { opacity: 0; }
+        }
+        @keyframes gb {
+            0%,86%,100% { transform: translateX(0); opacity: 0; }
+            88% { transform: translateX(5px); opacity: .85; }
+            91% { transform: translateX(-5px); opacity: .85; }
+            95% { transform: translateX(2px); opacity: .85; }
+            97% { opacity: 0; }
+        }
+
+        .hero-sub {
+            margin: 1.5rem 0 3rem;
+            font-size: clamp(.95rem,2.5vw,1.3rem);
+            color: rgba(255,255,255,.65);
+            letter-spacing: 4px; min-height: 2rem;
+        }
+        .cursor { color: var(--cyan); animation: cur .7s infinite; }
+        @keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        .cta {
+            display: inline-flex; align-items: center; gap: .6rem;
+            padding: 1rem 3rem; border: none; border-radius: 50px;
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            color: #fff; font-size: 1rem; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase;
+            cursor: pointer; overflow: hidden; position: relative;
+            animation: cta-pulse 2.5s ease-in-out infinite;
+            transition: transform .3s;
+        }
+        .cta:hover { transform: scale(1.06); }
+        .cta .cta-shine {
+            position: absolute; inset: 0;
+            background: conic-gradient(transparent,rgba(255,255,255,.28),transparent 30%);
+            animation: spin-shine 2s linear infinite;
+        }
+        .cta span { position: relative; z-index: 1; }
+        @keyframes spin-shine { to { transform: rotate(360deg); } }
+        @keyframes cta-pulse {
+            0%,100% { box-shadow: 0 0 20px rgba(179,77,255,.5),0 0 40px rgba(0,245,255,.18); }
+            50%      { box-shadow: 0 0 50px rgba(179,77,255,.8),0 0 90px rgba(0,245,255,.4); }
+        }
+
+        .scroll-hint {
+            position: absolute; bottom: 2rem; left: 50%;
+            transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: .4rem;
+            color: rgba(255,255,255,.35); font-size: .72rem; letter-spacing: 3px;
+            animation: hint-bounce 2s ease-in-out infinite;
+        }
+        @keyframes hint-bounce {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* ── SECTIONS ── */
+        .orbit-section {
+            position: relative; z-index: 2;
+            padding: 7rem 2rem 5rem;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            opacity: 0;
+            transform: rotate(-18deg) scale(.8) translateX(120px);
+            transition: opacity 1.1s cubic-bezier(.25,.46,.45,.94),
+                        transform 1.1s cubic-bezier(.25,.46,.45,.94);
+        }
+        .orbit-section:nth-of-type(even) {
+            transform: rotate(18deg) scale(.8) translateX(-120px);
+        }
+        .orbit-section.in { opacity: 1; transform: none; }
+
+        .sec-title {
+            font-size: clamp(1.8rem,5vw,3.2rem);
+            font-weight: 900; letter-spacing: 5px; text-transform: uppercase;
+            text-align: center;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .sec-line {
+            width: 90px; height: 2px; border-radius: 2px; margin: .6rem auto 3.5rem;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            box-shadow: 0 0 12px var(--cyan);
+        }
+
+        /* ── PRODUCT GRID ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+            gap: 1.8rem; max-width: 1200px; width: 100%;
+        }
+
+        .p-card {
+            background: var(--card); border-radius: 18px;
+            border: 1px solid rgba(179,77,255,.18);
+            overflow: hidden; cursor: pointer; position: relative;
+            transition: transform .4s, box-shadow .4s;
+        }
+        .p-card::before {
+            content: ''; position: absolute; inset: -2px;
+            border-radius: 20px; z-index: -1; opacity: 0;
+            background: linear-gradient(135deg, var(--purple), var(--cyan), var(--purple));
+            background-size: 200%; transition: opacity .4s;
+            animation: holo 4s ease infinite;
+        }
+        @keyframes holo {
+            0%,100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+        .p-card:hover::before { opacity: 1; }
+        .p-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(179,77,255,.3);
+        }
+
+        .p-img {
+            width: 100%; height: 190px;
+            background: linear-gradient(135deg,rgba(179,77,255,.2),rgba(0,245,255,.2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.8rem; position: relative; overflow: hidden;
+        }
+        .p-img::after {
+            content: ''; position: absolute;
+            top: -100%; left: -100%; width: 300%; height: 300%;
+            background: linear-gradient(105deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);
+            animation: shim 3.5s infinite;
+        }
+        @keyframes shim {
+            from { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            to   { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .p-body { padding: 1.4rem; }
+        .p-name { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+        .p-stars { color: #ffd700; font-size: .85rem; margin-bottom: .8rem; }
+        .p-price { font-size: 1.35rem; font-weight: 900; color: var(--cyan); margin-bottom: 1rem; }
+        .p-old { font-size: .85rem; color: rgba(255,255,255,.35); text-decoration: line-through; margin-left: .4rem; }
+
+        .btn-cart {
+            width: 100%; padding: .75rem;
+            background: linear-gradient(135deg,rgba(179,77,255,.25),rgba(0,245,255,.25));
+            border: 1px solid rgba(179,77,255,.45);
+            border-radius: 10px; color: #fff;
+            font-size: .85rem; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: all .3s; overflow: hidden;
+        }
+        .btn-cart:hover {
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            box-shadow: 0 0 22px rgba(179,77,255,.55);
+        }
+
+        /* ── PARTICLES ── */
+        .ptcl {
+            position: fixed; border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            animation: fly .85s ease-out forwards;
+        }
+        @keyframes fly {
+            0%   { transform: translate(0,0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* ── PROMOS ── */
+        .promo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+            gap: 2rem; max-width: 1200px; width: 100%;
+        }
+        .promo-card {
+            background: linear-gradient(135deg,rgba(179,77,255,.12),rgba(0,245,255,.08));
+            border: 1px solid rgba(179,77,255,.28);
+            border-radius: 20px; padding: 2rem;
+            text-align: center; position: relative; overflow: hidden;
+            transition: transform .3s;
+        }
+        .promo-card:hover { transform: translateY(-6px); }
+        .promo-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg,rgba(179,77,255,.04),transparent);
+            animation: promo-bg 4s ease infinite alternate;
+        }
+        @keyframes promo-bg {
+            from { opacity: .5; } to { opacity: 1; }
+        }
+        .promo-badge {
+            display: inline-block; padding: .3rem 1.1rem;
+            background: linear-gradient(135deg,#ff4d4d,#ff8c00);
+            border-radius: 20px; font-size: .78rem; font-weight: 700;
+            letter-spacing: 2px; margin-bottom: 1rem;
+            animation: badge-glow 2s infinite alternate;
+        }
+        @keyframes badge-glow {
+            from { box-shadow: 0 0 5px #ff4d4d; }
+            to   { box-shadow: 0 0 22px #ff4d4d,0 0 35px #ff8c00; }
+        }
+
+        .countdown {
+            display: flex; justify-content: center; gap: .8rem; margin: 1.4rem 0;
+        }
+        .cd-unit {
+            background: rgba(0,0,0,.5);
+            border: 1px solid rgba(179,77,255,.35);
+            border-radius: 10px; padding: .7rem .9rem; min-width: 58px;
+            text-align: center;
+        }
+        .cd-num {
+            font-size: 2rem; font-weight: 900;
+            color: var(--cyan); line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .cd-lbl {
+            font-size: .58rem; color: rgba(255,255,255,.45);
+            letter-spacing: 2px; text-transform: uppercase; margin-top: .3rem;
+        }
+
+        /* ── CONTACT ── */
+        .contact-form {
+            max-width: 600px; width: 100%;
+            display: flex; flex-direction: column; gap: 1.4rem;
+        }
+        .f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
+        .f-group { display: flex; flex-direction: column; gap: .5rem; }
+        .f-group label {
+            font-size: .78rem; letter-spacing: 2px;
+            color: rgba(255,255,255,.5); text-transform: uppercase;
+        }
+        .f-group input, .f-group textarea {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(179,77,255,.28);
+            border-radius: 12px; padding: .9rem 1rem;
+            color: #fff; font-size: .95rem; outline: none; resize: none;
+            transition: all .3s;
+        }
+        .f-group input:focus, .f-group textarea:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px rgba(0,245,255,.15);
+        }
+
+        /* ── CART SIDEBAR ── */
+        .cart-side {
+            position: fixed; right: -420px; top: 0;
+            width: 400px; height: 100vh;
+            background: rgba(8,3,35,.97);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(179,77,255,.28);
+            z-index: 9000; padding: 1.8rem;
+            display: flex; flex-direction: column;
+            transition: right .42s cubic-bezier(.25,.46,.45,.94);
+        }
+        .cart-side.open { right: 0; }
+
+        .cart-head {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 1.2rem; margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(179,77,255,.18);
+        }
+        .cart-head h2 {
+            font-size: 1.1rem; letter-spacing: 3px; text-transform: uppercase;
+            background: linear-gradient(90deg, var(--purple), var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .close-btn {
+            background: none; border: none; color: #fff;
+            font-size: 1.4rem; cursor: pointer; transition: transform .3s;
+        }
+        .close-btn:hover { transform: rotate(90deg); }
+
+        .cart-items-wrap { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+
+        .c-item {
+            display: flex; gap: 1rem; align-items: center;
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(179,77,255,.12);
+            border-radius: 12px; padding: .9rem;
+        }
+        .c-item-emoji { font-size: 1.8rem; min-width: 44px; text-align: center; }
+        .c-item-info { flex: 1; }
+        .c-item-name { font-size: .88rem; font-weight: 600; margin-bottom: .25rem; }
+        .c-item-price { color: var(--cyan); font-weight: 700; font-size: .9rem; }
+        .qty-ctrl { display: flex; align-items: center; gap: .4rem; }
+        .qty-btn {
+            background: rgba(255,255,255,.08); border: none; color: #fff;
+            width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+            font-size: .85rem; line-height: 1; transition: background .2s;
+        }
+        .qty-btn:hover { background: rgba(179,77,255,.4); }
+        .rm-btn { background: none; border: none; color: rgba(255,80,80,.7); cursor: pointer; font-size: 1rem; }
+
+        .cart-foot { padding-top: 1.4rem; border-top: 1px solid rgba(179,77,255,.18); }
+        .cart-total-row {
+            display: flex; justify-content: space-between;
+            font-size: 1.15rem; font-weight: 700; margin-bottom: 1.3rem;
+        }
+        .cart-total-row span:last-child { color: var(--cyan); }
+
+        .checkout-btn {
+            width: 100%; padding: 1rem; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            color: #fff; font-size: .95rem; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: transform .3s;
+        }
+        .checkout-btn:hover { transform: scale(1.02); }
+
+        /* ── OVERLAY ── */
+        #overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,.55);
+            z-index: 8000; opacity: 0; pointer-events: none; transition: opacity .4s;
+        }
+        #overlay.on { opacity: 1; pointer-events: all; }
+
+        /* ── FOOTER ── */
+        footer {
+            position: relative; z-index: 2;
+            background: rgba(3,0,21,.97);
+            border-top: 1px solid rgba(179,77,255,.18);
+            padding: 4.5rem 2rem 2rem;
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr));
+            gap: 3rem; max-width: 1200px; margin: 0 auto 3rem;
+        }
+        .fc h3 {
+            font-size: .82rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--cyan); margin-bottom: 1.4rem;
+        }
+        .fc ul { list-style: none; display: flex; flex-direction: column; gap: .75rem; }
+        .fc ul a { color: rgba(255,255,255,.45); text-decoration: none; font-size: .88rem; transition: color .3s; }
+        .fc ul a:hover { color: var(--cyan); }
+        .fc p { color: rgba(255,255,255,.4); font-size: .88rem; line-height: 1.8; }
+
+        .newsletter {
+            display: flex; gap: .5rem; margin-top: 1rem;
+        }
+        .newsletter input {
+            flex: 1; padding: .65rem 1rem;
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(179,77,255,.28);
+            border-radius: 8px; color: #fff; font-size: .82rem; outline: none;
+        }
+        .newsletter button {
+            padding: .65rem 1.1rem;
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            border: none; border-radius: 8px; color: #fff;
+            font-size: .78rem; font-weight: 700; cursor: pointer; letter-spacing: 1px;
+        }
+
+        .socials { display: flex; gap: 1rem; margin-top: 1.2rem; }
+        .social {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(179,77,255,.28);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: .9rem; transition: all .3s;
+        }
+        .social:hover {
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            border-color: transparent; transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center; padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,.05);
+            color: rgba(255,255,255,.25); font-size: .8rem;
+            max-width: 1200px; margin: 0 auto;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .search-wrap input { width: 110px; }
+            .search-wrap input:focus { width: 140px; }
+            .f-row { grid-template-columns: 1fr; }
+            .cart-side { width: 100%; right: -100%; }
+            #vortex-canvas { width: 320px !important; height: 320px !important; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="space-canvas"></canvas>
+<div id="overlay" onclick="closeCart()"></div>
+
+<!-- ══════════ NAV ══════════ -->
+<nav>
+    <div class="logo">✦ Nebula Store</div>
+    <ul class="nav-links">
+        <li><a href="#hero">Accueil</a></li>
+        <li><a href="#products">Produits</a></li>
+        <li><a href="#nouveautes">Nouveautés</a></li>
+        <li><a href="#promotions">Promotions</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+        <div class="search-wrap"><input type="text" placeholder="Rechercher..."></div>
+        <button class="icon-btn" onclick="alert('Mon compte 👤')">👤</button>
+        <button class="icon-btn" onclick="openCart()">
+            🛒<span class="badge" id="cart-count">0</span>
+        </button>
+    </div>
+</nav>
+
+<!-- ══════════ CART ══════════ -->
+<div class="cart-side" id="cart-side">
+    <div class="cart-head">
+        <h2>Mon Panier</h2>
+        <button class="close-btn" onclick="closeCart()">✕</button>
+    </div>
+    <div class="cart-items-wrap" id="cart-items">
+        <div style="text-align:center;color:rgba(255,255,255,.28);margin-top:3rem;font-size:.88rem;letter-spacing:2px;">
+            PANIER VIDE<br><br>🛸
+        </div>
+    </div>
+    <div class="cart-foot">
+        <div class="cart-total-row">
+            <span>Total</span>
+            <span id="cart-total">0,00 €</span>
+        </div>
+        <button class="checkout-btn" onclick="alert('Paiement galactique en route 🚀')">Commander →</button>
+    </div>
+</div>
+
+<!-- ══════════ HERO ══════════ -->
+<section id="hero">
+    <canvas id="vortex-canvas" width="700" height="700"></canvas>
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <span class="main">NEBULA STORE</span>
+            <span class="glitch-layer glitch-a">NEBULA STORE</span>
+            <span class="glitch-layer glitch-b">NEBULA STORE</span>
+        </h1>
+        <p class="hero-sub"><span id="typewriter"></span><span class="cursor">|</span></p>
+        <button class="cta" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+            <div class="cta-shine"></div>
+            <span>✦ Explorer la Galaxie</span>
+        </button>
+    </div>
+    <div class="scroll-hint">SCROLL <br>↓</div>
+</section>
+
+<!-- ══════════ PRODUCTS ══════════ -->
+<section id="products" class="orbit-section">
+    <h2 class="sec-title">Nos Produits</h2>
+    <div class="sec-line"></div>
+    <div class="grid" id="grid-products"></div>
+</section>
+
+<!-- ══════════ NOUVEAUTÉS ══════════ -->
+<section id="nouveautes" class="orbit-section">
+    <h2 class="sec-title">✨ Nouveautés</h2>
+    <div class="sec-line"></div>
+    <div class="grid" id="grid-new"></div>
+</section>
+
+<!-- ══════════ PROMOTIONS ══════════ -->
+<section id="promotions" class="orbit-section">
+    <h2 class="sec-title">🔥 Promotions</h2>
+    <div class="sec-line"></div>
+    <div class="promo-grid">
+        <div class="promo-card">
+            <div class="promo-badge">FLASH SALE ⚡</div>
+            <div style="font-size:4rem;margin:1rem 0">🌌</div>
+            <h3 style="font-size:1.25rem;margin-bottom:.5rem">Pack Galaxie Pro</h3>
+            <p style="color:rgba(255,255,255,.45);font-size:.88rem;margin-bottom:.8rem">Collection limitée — 3 articles premium</p>
+            <div style="font-size:2rem;font-weight:900;color:var(--cyan)">149,99 €</div>
+            <div style="text-decoration:line-through;color:rgba(255,255,255,.3);margin-bottom:1.2rem">299,99 €</div>
+            <div class="countdown" id="cd1"></div>
+            <button class="btn-cart" onclick="addCart(this,'Pack Galaxie Pro','149.99','🌌')">Saisir l'offre →</button>
+        </div>
+        <div class="promo-card">
+            <div class="promo-badge">−50% AUJOURD'HUI</div>
+            <div style="font-size:4rem;margin:1rem 0">⭐</div>
+            <h3 style="font-size:1.25rem;margin-bottom:.5rem">Étoile Néon Pack</h3>
+            <p style="color:rgba(255,255,255,.45);font-size:.88rem;margin-bottom:.8rem">5 accessoires lumineux édition spéciale</p>
+            <div style="font-size:2rem;font-weight:900;color:var(--cyan)">79,99 €</div>
+            <div style="text-decoration:line-through;color:rgba(255,255,255,.3);margin-bottom:1.2rem">159,99 €</div>
+            <div class="countdown" id="cd2"></div>
+            <button class="btn-cart" onclick="addCart(this,'Étoile Néon Pack','79.99','⭐')">Saisir l'offre →</button>
+        </div>
+        <div class="promo-card">
+            <div class="promo-badge">ÉDITION LIMITÉE</div>
+            <div style="font-size:4rem;margin:1rem 0">🪐</div>
+            <h3 style="font-size:1.25rem;margin-bottom:.5rem">Saturn Collection</h3>
+            <p style="color:rgba(255,255,255,.45);font-size:.88rem;margin-bottom:.8rem">La collection la plus exclusive de l'année</p>
+            <div style="font-size:2rem;font-weight:900;color:var(--cyan)">199,99 €</div>
+            <div style="text-decoration:line-through;color:rgba(255,255,255,.3);margin-bottom:1.2rem">399,99 €</div>
+            <div class="countdown" id="cd3"></div>
+            <button class="btn-cart" onclick="addCart(this,'Saturn Collection','199.99','🪐')">Saisir l'offre →</button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════ CONTACT ══════════ -->
+<section id="contact" class="orbit-section">
+    <h2 class="sec-title">Nous Contacter</h2>
+    <div class="sec-line"></div>
+    <form class="contact-form" onsubmit="return submitForm(event)">
+        <div class="f-row">
+            <div class="f-group"><label>Nom</label><input type="text" placeholder="Votre nom" required></div>
+            <div class="f-group"><label>Email</label><input type="email" placeholder="vous@email.com" required></div>
+        </div>
+        <div class="f-group"><label>Sujet</label><input type="text" placeholder="Sujet de votre message"></div>
+        <div class="f-group"><label>Message</label><textarea rows="5" placeholder="Votre message..."></textarea></div>
+        <button type="submit" class="cta" style="border:none;width:100%;animation:none;justify-content:center">
+            <div class="cta-shine"></div>
+            <span>Envoyer dans l'espace 🚀</span>
+        </button>
+    </form>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+    <div class="footer-grid">
+        <div class="fc">
+            <div class="logo" style="margin-bottom:1rem">✦ Nebula Store</div>
+            <p>Le commerce du futur, aujourd'hui.<br>Découvrez notre univers galactique d'articles premium conçus pour les explorateurs du cosmos.</p>
+            <div class="socials">
+                <div class="social">𝕏</div>
+                <div class="social">f</div>
+                <div class="social">in</div>
+                <div class="social">ig</div>
+            </div>
+        </div>
+        <div class="fc">
+            <h3>Boutique</h3>
+            <ul>
+                <li><a href="#">Nouveautés</a></li>
+                <li><a href="#">Meilleures ventes</a></li>
+                <li><a href="#">Promotions</a></li>
+                <li><a href="#">Collections</a></li>
+                <li><a href="#">Marques</a></li>
+            </ul>
+        </div>
+        <div class="fc">
+            <h3>Aide</h3>
+            <ul>
+                <li><a href="#">FAQ</a></li>
+                <li><a href="#">Livraison</a></li>
+                <li><a href="#">Retours & échanges</a></li>
+                <li><a href="#">Support</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+        <div class="fc">
+            <h3>Newsletter</h3>
+            <p>Recevez nos offres exclusives en avant-première directement dans votre boîte.</p>
+            <div class="newsletter">
+                <input type="email" placeholder="Email...">
+                <button onclick="alert('Merci ! Bienvenue dans la galaxie 🚀')">OK</button>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 NEBULA STORE — Tous droits réservés &nbsp;|&nbsp; Propulsé par énergie cosmique ✦</p>
+    </div>
+</footer>
+
+<script>
+// ════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════
+const PRODUCTS = [
+    {n:'Casque Cosmos X',   p:'189,99', o:'249,99', s:5, e:'🎧'},
+    {n:'Montre Orbital',    p:'299,99', o:'399,99', s:4, e:'⌚'},
+    {n:'Veste Nébuleuse',   p:'149,99', o:'199,99', s:5, e:'🧥'},
+    {n:'Lunettes Quasar',   p:'89,99',  o:'119,99', s:4, e:'🕶️'},
+    {n:'Sac Voie Lactée',   p:'129,99', o:'179,99', s:5, e:'👜'},
+    {n:'Tablette Pulsar',   p:'449,99', o:'599,99', s:5, e:'📱'},
+    {n:'Sneakers Aurora',   p:'179,99', o:'229,99', s:4, e:'👟'},
+    {n:'Parfum Andromède',  p:'79,99',  o:'99,99',  s:5, e:'✨'},
+];
+const NEW_PRODUCTS = [
+    {n:'Drone Solaire',     p:'599,99', o:null, s:5, e:'🚁'},
+    {n:'Cristal Stellaire', p:'45,99',  o:null, s:4, e:'💎'},
+    {n:'Robot Compagnon',   p:'399,99', o:null, s:5, e:'🤖'},
+    {n:'Livre Cosmique',    p:'29,99',  o:null, s:4, e:'📖'},
+];
+
+function cardHTML(p) {
+    const stars = '★'.repeat(p.s) + '☆'.repeat(5 - p.s);
+    const old   = p.o ? `<span class="p-old">${p.o} €</span>` : '';
+    const raw   = p.p.replace(',','.');
+    return `
+    <div class="p-card">
+        <div class="p-img">${p.e}</div>
+        <div class="p-body">
+            <div class="p-name">${p.n}</div>
+            <div class="p-stars">${stars}</div>
+            <div class="p-price">${p.p} € ${old}</div>
+            <button class="btn-cart" onclick="addCart(this,'${p.n}','${raw}','${p.e}')">
+                + Ajouter au panier
+            </button>
+        </div>
+    </div>`;
+}
+document.getElementById('grid-products').innerHTML = PRODUCTS.map(cardHTML).join('');
+document.getElementById('grid-new').innerHTML      = NEW_PRODUCTS.map(cardHTML).join('');
+
+// ════════════════════════════════════════
+//  CART
+// ════════════════════════════════════════
+let cart = [];
+
+function openCart()  { document.getElementById('cart-side').classList.add('open'); document.getElementById('overlay').classList.add('on'); }
+function closeCart() { document.getElementById('cart-side').classList.remove('open'); document.getElementById('overlay').classList.remove('on'); }
+
+function renderCart() {
+    const total = cart.reduce((a,b) => a + parseFloat(b.price) * b.qty, 0);
+    const count = cart.reduce((a,b) => a + b.qty, 0);
+    document.getElementById('cart-count').textContent = count;
+    document.getElementById('cart-total').textContent = total.toFixed(2).replace('.',',') + ' €';
+
+    const wrap = document.getElementById('cart-items');
+    if (!cart.length) {
+        wrap.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.28);margin-top:3rem;font-size:.88rem;letter-spacing:2px;">PANIER VIDE<br><br>🛸</div>';
+        return;
+    }
+    wrap.innerHTML = cart.map((item, i) => `
+        <div class="c-item">
+            <div class="c-item-emoji">${item.emoji}</div>
+            <div class="c-item-info">
+                <div class="c-item-name">${item.name}</div>
+                <div class="c-item-price">${item.price.replace('.',',')} €</div>
+            </div>
+            <div class="qty-ctrl">
+                <button class="qty-btn" onclick="chgQty(${i},-1)">−</button>
+                <span style="min-width:18px;text-align:center">${item.qty}</span>
+                <button class="qty-btn" onclick="chgQty(${i},1)">+</button>
+            </div>
+            <button class="rm-btn" onclick="rmItem(${i})">✕</button>
+        </div>
+    `).join('');
+}
+
+function addCart(btn, name, price, emoji) {
+    const ex = cart.find(i => i.name === name);
+    if (ex) ex.qty++; else cart.push({name, price, emoji, qty:1});
+    renderCart();
+    spawnParticles(btn);
+    const orig = btn.textContent;
+    btn.textContent = '✓ Ajouté !';
+    btn.style.background = 'linear-gradient(135deg,#00f5ff,#b34dff)';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1200);
+}
+
+function chgQty(i, d) { cart[i].qty += d; if (cart[i].qty <= 0) cart.splice(i,1); renderCart(); }
+function rmItem(i)     { cart.splice(i,1); renderCart(); }
+
+// ════════════════════════════════════════
+//  PARTICLES
+// ════════════════════════════════════════
+const COLORS = ['#b34dff','#00f5ff','#fff','#ffd700','#ff6b6b','#00ff88'];
+function spawnParticles(btn) {
+    const r  = btn.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'ptcl';
+        const angle = (Math.PI*2*i)/20;
+        const dist  = 55 + Math.random()*85;
+        const size  = 4 + Math.random()*6;
+        p.style.cssText = `
+            left:${cx}px;top:${cy}px;
+            width:${size}px;height:${size}px;
+            background:${COLORS[i%COLORS.length]};
+            box-shadow:0 0 6px ${COLORS[i%COLORS.length]};
+            --tx:${Math.cos(angle)*dist}px;
+            --ty:${Math.sin(angle)*dist}px;
+        `;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+    }
+}
+
+// ════════════════════════════════════════
+//  TYPEWRITER
+// ════════════════════════════════════════
+const PHRASES = [
+    "L'univers dans votre panier ✦",
+    "Commerce galactique de luxe",
+    "Explorez. Choisissez. Possédez.",
+    "La boutique du cosmos",
+    "Voyagez à la vitesse de la lumière 🚀"
+];
+let pIdx=0, cIdx=0, del=false;
+function tw() {
+    const el  = document.getElementById('typewriter');
+    const cur = PHRASES[pIdx];
+    if (!del) {
+        el.textContent = cur.slice(0,++cIdx);
+        if (cIdx===cur.length) { del=true; setTimeout(tw,2200); return; }
+    } else {
+        el.textContent = cur.slice(0,--cIdx);
+        if (cIdx===0) { del=false; pIdx=(pIdx+1)%PHRASES.length; }
+    }
+    setTimeout(tw, del ? 35 : 65);
+}
+tw();
+
+// ════════════════════════════════════════
+//  SCROLL ORBITAL REVEAL
+// ════════════════════════════════════════
+const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.orbit-section').forEach(s => io.observe(s));
+
+// ════════════════════════════════════════
+//  COUNTDOWN
+// ════════════════════════════════════════
+function countdown(endMs, id) {
+    function tick() {
+        const d = endMs - Date.now();
+        if (d <= 0) { document.getElementById(id).innerHTML = '<span style="color:#ff4d4d;letter-spacing:2px;font-size:.8rem">EXPIRÉ</span>'; return; }
+        const h = String(Math.floor(d/3600000)).padStart(2,'0');
+        const m = String(Math.floor((d%3600000)/60000)).padStart(2,'0');
+        const s = String(Math.floor((d%60000)/1000)).padStart(2,'0');
+        document.getElementById(id).innerHTML = `
+            <div class="cd-unit"><div class="cd-num">${h}</div><div class="cd-lbl">Heures</div></div>
+            <div class="cd-unit"><div class="cd-num">${m}</div><div class="cd-lbl">Min</div></div>
+            <div class="cd-unit"><div class="cd-num">${s}</div><div class="cd-lbl">Sec</div></div>`;
+        setTimeout(tick, 1000);
+    }
+    tick();
+}
+countdown(Date.now() + 3*3600000 + 42*60000 + 17000, 'cd1');
+countdown(Date.now() + 11*3600000 + 15*60000 + 55000, 'cd2');
+countdown(Date.now() + 23*3600000 + 59*60000 + 59000, 'cd3');
+
+// ════════════════════════════════════════
+//  CONTACT FORM
+// ════════════════════════════════════════
+function submitForm(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.innerHTML = '<div class="cta-shine"></div><span>✓ Message reçu — à bientôt ! 🛸</span>';
+    setTimeout(() => {
+        btn.innerHTML = '<div class="cta-shine"></div><span>Envoyer dans l\'espace 🚀</span>';
+        e.target.reset();
+    }, 3000);
+    return false;
+}
+
+// ════════════════════════════════════════
+//  SPACE BACKGROUND
+// ════════════════════════════════════════
+const SC  = document.getElementById('space-canvas');
+const SCX = SC.getContext('2d');
+let scrollY = 0;
+window.addEventListener('scroll', () => scrollY = window.scrollY);
+
+function resizeSC() { SC.width = window.innerWidth; SC.height = window.innerHeight; }
+resizeSC(); window.addEventListener('resize', resizeSC);
+
+// Stars
+const STARS = Array.from({length:350}, () => ({
+    x: Math.random()*window.innerWidth,
+    y: Math.random()*window.innerHeight,
+    r: Math.random()*1.6 + .25,
+    tw: Math.random()*Math.PI*2,
+    sp: Math.random()*.025 + .006
+}));
+
+// Shooting stars
+const SHOOTS = Array.from({length:4}, () => resetShoot({}));
+function resetShoot(s) {
+    s.x  = Math.random()*window.innerWidth;
+    s.y  = Math.random()*(window.innerHeight*.5);
+    s.vx = 4 + Math.random()*6;
+    s.vy = 1 + Math.random()*3;
+    s.len= 80 + Math.random()*120;
+    s.a  = 0;
+    s.life = 0; s.maxLife = 60 + Math.random()*40;
+    return s;
+}
+
+const NEBULA_DATA = [
+    {rx:.15,ry:.3,rad:420,c:'rgba(140,50,255,.055)'},
+    {rx:.85,ry:.65,rad:380,c:'rgba(0,220,255,.045)'},
+    {rx:.5, ry:.95,rad:300,c:'rgba(0,80,255,.035)'},
+];
+
+function drawSpace(t) {
+    SCX.clearRect(0,0,SC.width,SC.height);
+
+    // Nebulas
+    NEBULA_DATA.forEach(n => {
+        const g = SCX.createRadialGradient(n.rx*SC.width,n.ry*SC.height,0,n.rx*SC.width,n.ry*SC.height,n.rad);
+        g.addColorStop(0, n.c); g.addColorStop(1,'transparent');
+        SCX.fillStyle = g; SCX.fillRect(0,0,SC.width,SC.height);
+    });
+
+    // Stars
+    STARS.forEach(s => {
+        s.tw += s.sp;
+        const a  = .3 + .7*(.5 + .5*Math.sin(s.tw));
+        const py = ((s.y - scrollY*(0.04 + s.r*.08)) % SC.height + SC.height) % SC.height;
+        if (s.r > 1.1) {
+            const g = SCX.createRadialGradient(s.x,py,0,s.x,py,s.r*4);
+            g.addColorStop(0,`rgba(180,210,255,${a*.3})`); g.addColorStop(1,'transparent');
+            SCX.fillStyle=g; SCX.beginPath(); SCX.arc(s.x,py,s.r*4,0,Math.PI*2); SCX.fill();
+        }
+        SCX.beginPath(); SCX.arc(s.x,py,s.r,0,Math.PI*2);
+        SCX.fillStyle=`rgba(225,235,255,${a})`; SCX.fill();
+    });
+
+    // Shooting stars
+    SHOOTS.forEach(s => {
+        s.life++;
+        if (s.life > s.maxLife) resetShoot(s);
+        s.x += s.vx; s.y += s.vy;
+        const prog = s.life / s.maxLife;
+        const alpha = Math.sin(prog * Math.PI) * .85;
+        const angle = Math.atan2(s.vy,s.vx);
+        SCX.save();
+        SCX.translate(s.x,s.y); SCX.rotate(angle);
+        const g = SCX.createLinearGradient(-s.len,0,0,0);
+        g.addColorStop(0,'transparent'); g.addColorStop(1,`rgba(200,230,255,${alpha})`);
+        SCX.strokeStyle=g; SCX.lineWidth=1.5;
+        SCX.beginPath(); SCX.moveTo(-s.len,0); SCX.lineTo(0,0); SCX.stroke();
+        SCX.restore();
+    });
+
+    requestAnimationFrame(drawSpace);
+}
+requestAnimationFrame(drawSpace);
+
+// ════════════════════════════════════════
+//  VORTEX
+// ════════════════════════════════════════
+const VC  = document.getElementById('vortex-canvas');
+const VCX = VC.getContext('2d');
+const VW=700, VH=700, CX=350, CY=350;
+let vAngle=0;
+
+// Vortex particles
+const VP = Array.from({length:180}, () => ({
+    angle: Math.random()*Math.PI*2,
+    r:     20 + Math.random()*240,
+    speed: (.005 + Math.random()*.02) * (Math.random()<.5?1:-1),
+    size:  1 + Math.random()*2.5,
+    color: Math.random()<.5 ? [0,245,255] : [179,77,255],
+    alpha: .3 + Math.random()*.7
+}));
+
+function drawVortex(t) {
+    VCX.clearRect(0,0,VW,VH);
+    vAngle += .007;
+
+    // Outer nebula glow
+    const og = VCX.createRadialGradient(CX,CY,0,CX,CY,300);
+    og.addColorStop(0,'rgba(179,77,255,.2)');
+    og.addColorStop(.45,'rgba(0,100,255,.08)');
+    og.addColorStop(1,'transparent');
+    VCX.fillStyle=og; VCX.fillRect(0,0,VW,VH);
+
+    // Rings
+    for (let ri=1;ri<=7;ri++) {
+        const rr = ri*36;
+        const ra = .03 + .06*Math.abs(Math.sin(t/900+ri*.5));
+        VCX.beginPath(); VCX.arc(CX,CY,rr,0,Math.PI*2);
+        VCX.strokeStyle=`rgba(179,77,255,${ra})`; VCX.lineWidth=1; VCX.stroke();
+    }
+
+    // Spiral arms (4)
+    for (let arm=0;arm<4;arm++) {
+        const aOff = (Math.PI*2/4)*arm + vAngle;
+        VCX.beginPath();
+        for (let r=4;r<285;r+=.8) {
+            const a = aOff + r*.042;
+            const x = CX + Math.cos(a)*r, y = CY + Math.sin(a)*r;
+            r<5 ? VCX.moveTo(x,y) : VCX.lineTo(x,y);
+        }
+        const ag = VCX.createLinearGradient(CX-250,CY,CX+250,CY);
+        ag.addColorStop(0,`rgba(0,245,255,.75)`);
+        ag.addColorStop(.5,`rgba(179,77,255,.5)`);
+        ag.addColorStop(1,`rgba(0,80,255,.15)`);
+        VCX.strokeStyle=ag;
+        VCX.lineWidth = 1.5 - arm*.25;
+        VCX.shadowBlur=18; VCX.shadowColor = arm%2?'#b34dff':'#00f5ff';
+        VCX.stroke(); VCX.shadowBlur=0;
+    }
+
+    // Warp lines
+    for (let i=0;i<50;i++) {
+        const wa = (Math.PI*2/50)*i + vAngle*.25;
+        const wr1 = 15 + (i%7)*8;
+        const wr2 = wr1 + 28 + Math.sin(t/400+i)*.18;
+        const wa_ = .06 + .15*Math.abs(Math.sin(t/280+i*.8));
+        VCX.beginPath();
+        VCX.moveTo(CX+Math.cos(wa)*wr1, CY+Math.sin(wa)*wr1);
+        VCX.lineTo(CX+Math.cos(wa)*wr2, CY+Math.sin(wa)*wr2);
+        VCX.strokeStyle=`rgba(0,245,255,${wa_})`; VCX.lineWidth=.8; VCX.stroke();
+    }
+
+    // Orbiting particles
+    VP.forEach(p => {
+        p.angle += p.speed;
+        const spiral = p.r * (1 - .00018*((vAngle*100)%1000));
+        const realR  = ((spiral % 260) + 260) % 260 + 15;
+        const px = CX + Math.cos(p.angle)*realR;
+        const py = CY + Math.sin(p.angle)*realR;
+        const fade = 1 - realR/260;
+        VCX.beginPath(); VCX.arc(px,py,p.size*.6,0,Math.PI*2);
+        VCX.fillStyle=`rgba(${p.color.join(',')},${p.alpha*fade})`;
+        VCX.shadowBlur=8; VCX.shadowColor=`rgb(${p.color.join(',')})`;
+        VCX.fill(); VCX.shadowBlur=0;
+    });
+
+    // Core glow
+    const cg = VCX.createRadialGradient(CX,CY,0,CX,CY,55);
+    cg.addColorStop(0,'rgba(255,255,255,.95)');
+    cg.addColorStop(.25,'rgba(179,77,255,.9)');
+    cg.addColorStop(.6,'rgba(0,245,255,.4)');
+    cg.addColorStop(1,'transparent');
+    VCX.fillStyle=cg; VCX.beginPath(); VCX.arc(CX,CY,55,0,Math.PI*2); VCX.fill();
+
+    // Bright core
+    const ic = VCX.createRadialGradient(CX,CY,0,CX,CY,14);
+    ic.addColorStop(0,'rgba(255,255,255,1)');
+    ic.addColorStop(.6,'rgba(200,240,255,.8)');
+    ic.addColorStop(1,'rgba(0,245,255,0)');
+    VCX.fillStyle=ic; VCX.beginPath(); VCX.arc(CX,CY,14,0,Math.PI*2); VCX.fill();
+
+    // Lens flares
+    for (let f=0;f<8;f++) {
+        const fa = vAngle*2.5 + (Math.PI*2/8)*f;
+        const fr = 10 + f*5;
+        VCX.beginPath(); VCX.arc(CX+Math.cos(fa)*fr, CY+Math.sin(fa)*fr, Math.max(.5,2.5-f*.28), 0, Math.PI*2);
+        VCX.fillStyle=`rgba(255,255,255,${.75-f*.08})`; VCX.fill();
+    }
+
+    requestAnimationFrame(drawVortex);
+}
+requestAnimationFrame(drawVortex);
+</script>
+</body>
+</html>
